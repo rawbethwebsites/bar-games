@@ -28,28 +28,38 @@ function createGuiltyGame(app) {
   function renderChoices() {
     stage.innerHTML = `
       <div class="case-card">
-        <div class="timer-ring" style="clip-path:none"></div>
-        <p>${currentCase.text}</p>
+        <div class="round-label">ROUND ${round + 1} / ${maxRounds}</div>
+        <div class="timer-bar"><div class="fill" id="timer-fill"></div></div>
+        <p style="font-size:1.6rem;line-height:1.5;">${currentCase.text}</p>
       </div>
       <div class="choices">
-        <button class="choice-btn choice-real" data-side="red" disabled>Real Lawsuit</button>
-        <button class="choice-btn choice-fake" data-side="red" disabled>Fake Lawsuit</button>
+        <button class="choice-btn choice-fake" data-side="red">FAKE</button>
+        <button class="choice-btn choice-real" data-side="red">REAL</button>
       </div>
       <div class="choices">
-        <button class="choice-btn choice-real" data-side="blue" disabled>Real Lawsuit</button>
-        <button class="choice-btn choice-fake" data-side="blue" disabled>Fake Lawsuit</button>
+        <button class="choice-btn choice-fake" data-side="blue">FAKE</button>
+        <button class="choice-btn choice-real" data-side="blue">REAL</button>
       </div>
     `;
+
+    stage.querySelectorAll('.choice-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const side = btn.dataset.side;
+        const isReal = btn.classList.contains('choice-real');
+        lockIn(side, isReal);
+      });
+    });
+
     startTimer(8);
   }
 
   function startTimer(seconds) {
     timeLeft = seconds;
-    const ring = stage.querySelector('.timer-ring');
+    const fill = document.getElementById('timer-fill');
     timer = setInterval(() => {
       timeLeft -= 0.1;
-      const pct = Math.max(0, timeLeft / seconds);
-      if (ring) ring.style.opacity = 0.3 + pct * 0.7;
+      const pct = Math.max(0, timeLeft / seconds) * 100;
+      if (fill) fill.style.width = `${pct}%`;
       if (timeLeft <= 0) {
         clearInterval(timer);
         if (!locked.red) lockIn('red', null);
@@ -67,12 +77,9 @@ function createGuiltyGame(app) {
     const sideIndex = side === 'red' ? 0 : 1;
     const row = stage.querySelectorAll('.choices')[sideIndex];
     row.querySelectorAll('button').forEach(btn => {
-      btn.disabled = true;
-      if (btn.classList.contains(answer ? 'choice-real' : 'choice-fake')) {
-        btn.style.opacity = '1';
-      } else {
-        btn.style.opacity = '0.3';
-      }
+      const isReal = btn.classList.contains('choice-real');
+      const isSelected = (answer === true && isReal) || (answer === false && !isReal);
+      if (!isSelected) btn.classList.add('locked');
     });
 
     if (locked.red && locked.blue) {
@@ -87,7 +94,7 @@ function createGuiltyGame(app) {
 
     const isReal = currentCase.isReal;
     const stampClass = isReal ? 'real' : 'fake';
-    const stampText = isReal ? 'Real Lawsuit' : 'Fake Lawsuit';
+    const stampText = isReal ? 'REAL' : 'FAKE';
 
     const card = stage.querySelector('.case-card');
     if (card) {
@@ -115,7 +122,7 @@ function createGuiltyGame(app) {
     app.scores.blue += bluePoints;
     updateScoreBar();
 
-    setTimeout(nextOrEnd, 3000);
+    setTimeout(nextOrEnd, 3500);
   }
 
   function nextOrEnd() {
@@ -142,7 +149,7 @@ function createGuiltyGame(app) {
 
     stage.innerHTML = `
       <div class="countdown"></div>
-      <div style="margin-top:1rem;color:var(--muted)">Round ${round + 1} of ${maxRounds}</div>
+      <div style="margin-top:1.5rem;font-family:Orbitron,sans-serif;color:var(--muted);letter-spacing:0.1em;">ROUND ${round + 1} / ${maxRounds}</div>
     `;
 
     showCountdown(stage.firstElementChild, () => {
@@ -162,11 +169,8 @@ function createGuiltyGame(app) {
   function onKey(key) {
     if (!currentCase || waitingReveal) return;
 
-    // Left player: A = fake, D = real
     if (key === 'a') lockIn('red', false);
     if (key === 'd') lockIn('red', true);
-
-    // Right player: J = fake, L = real
     if (key === 'j') lockIn('blue', false);
     if (key === 'l') lockIn('blue', true);
   }

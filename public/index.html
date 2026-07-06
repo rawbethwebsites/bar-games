@@ -5,65 +5,66 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Bar Games</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
   <div id="app">
     <section id="home" class="screen active">
-      <div class="hero">
-        <div class="seal">⚖</div>
-        <h1>The Bar Games</h1>
-        <p class="subtitle">Five law-flavoured party games for two players</p>
-      </div>
-      <div class="mode-select">
-        <button class="mode-btn primary" data-mode="same-screen">
-          <span class="icon">⌨</span>
-          <span>Same Screen</span>
-          <small>Always works, no WiFi needed</small>
-        </button>
-        <button class="mode-btn" data-mode="phone">
-          <span class="icon">📱</span>
-          <span>Use Our Phones</span>
-          <small>Scan a QR code to join</small>
-        </button>
+      <div class="arcade-card"
+        <h1 class="arcade-title">THE BAR GAMES</h1>
+        <p class="arcade-subtitle">Five law-flavoured party games for two players</p>
+
+        <div class="mode-select">
+          <button class="mode-btn neon-red" data-mode="same-screen">
+            <span class="icon">🕹</span>
+            <span>SAME SCREEN</span>
+            <small>Keyboard split play — no WiFi</small>
+          </button>
+          <button class="mode-btn neon-blue" data-mode="phone">
+            <span class="icon">📲</span>
+            <span>USE PHONES</span>
+            <small>Scan QR code to join</small>
+          </button>
+        </div>
       </div>
     </section>
 
     <section id="lobby" class="screen">
       <div class="header">
-        <button class="back">← Back</button>
-        <h2>Choose a Game</h2>
-        <div class="score-bar"><span class="red">0</span><span class="vs">vs</span><span class="blue">0</span></div>
+        <button class="back">← BACK</button>
+        <h2 class="arcade-heading">PICK A GAME</h2>
+        <div class="score-bar top-bar"><span class="red">0</span><span class="vs">VS</span><span class="blue">0</span></div>
       </div>
+
       <div class="game-grid">
         <button class="game-card" data-game="guilty">
           <span class="game-icon">⚖</span>
-          <h3>Guilty or Not Guilty</h3>
+          <h3>GUILTY OR NOT GUILTY</h3>
           <p>Real lawsuit, or fake?</p>
         </button>
         <button class="game-card" data-game="objection">
           <span class="game-icon">🗣</span>
-          <h3>Objection!</h3>
+          <h3>OBJECTION!</h3>
           <p>Fastest buzzer wins.</p>
         </button>
         <button class="game-card" data-game="sustained">
           <span class="game-icon">❓</span>
-          <h3>Sustained</h3>
+          <h3>SUSTAINED</h3>
           <p>Trivia sprint.</p>
         </button>
         <button class="game-card" data-game="order">
           <span class="game-icon">🤣</span>
-          <h3>Order in the Court</h3>
+          <h3>ORDER IN THE COURT</h3>
           <p>Funniest line wins.</p>
         </button>
         <button class="game-card" data-game="gavel">
           <span class="game-icon">🔨</span>
-          <h3>Beat the Gavel</h3>
+          <h3>BEAT THE GAVEL</h3>
           <p>Stop the verdict meter.</p>
         </button>
         <button class="game-card tournament" data-game="tournament">
           <span class="game-icon">🏆</span>
-          <h3>Tournament</h3>
+          <h3>TOURNAMENT</h3>
           <p>Play all five. Crown the Silk.</p>
         </button>
       </div>
@@ -71,30 +72,33 @@
 
     <section id="game" class="screen">
       <div class="game-ui">
-        <div class="score-bar top">
-          <div class="left-score"><span class="label">Prosecution</span><span class="score red">0</span></div>
+        <div class="score-bar top-bar absolute">
+          <div class="left-score"><span class="label">PROSECUTION</span><span class="score red">0</span></div>
           <div class="vs">VS</div>
-          <div class="right-score"><span class="score blue">0</span><span class="label">Defence</span></div>
+          <div class="right-score"><span class="score blue">0</span><span class="label">DEFENCE</span></div>
         </div>
+
         <div id="game-stage"></div>
+
         <div class="controls-hint">
-          <span><b>Left:</b> A = Fake, D = Real</span>
-          <span><b>Right:</b> J = Fake, L = Real</span>
+          <span><b>LEFT:</b> A = FAKE · D = REAL</span>
+          <span><b>RIGHT:</b> J = FAKE · L = REAL</span>
         </div>
       </div>
     </section>
 
     <section id="phone-lobby" class="screen">
-      <div class="hero">
-        <h1>Phone Mode</h1>
-        <p class="subtitle">Scan the QR code to join</p>
-      </div>
-      <div id="qr-container"></div>
-      <div id="room-code" class="room-code"></div>
-      <div id="players-joined" class="players-joined"></div>
-      <div class="mode-select">
-        <button class="mode-btn primary" id="start-game-btn" disabled>Waiting for players…</button>
-        <button class="mode-btn back">Back</button>
+      <div class="arcade-card">
+        <h2 class="arcade-heading">PHONE MODE</h2>
+        <p class="arcade-subtitle">Scan the QR code to join the duel</p>
+        <div id="qr-container" class="qr-glow"></div>
+        <div id="room-code" class="room-code"></div>
+        <div id="players-joined" class="players-joined"></div>
+
+        <div class="mode-select">
+          <button class="mode-btn primary" id="start-game-btn" disabled>WAITING FOR PLAYERS…</button>
+          <button class="mode-btn back">BACK</button>
+        </div>
       </div>
     </section>
   </div>

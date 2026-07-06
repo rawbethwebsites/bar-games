@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variant: Minimal Ritual — The Bar Games</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f0f10;
+      --surface: #18181a;
+      --text: #f5f3ef;
+      --muted: #6e6d6a;
+      --accent: #d4a853;
+      --red: #c14945;
+      --blue: #4a78c7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .container {
+      width: min(720px, 95vw);
+      text-align: center;
+    }
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+    }
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 5rem;
+      font-weight: 700;
+      line-height: 0.95;
+      margin-bottom: 1.25rem;
+    }
+    .subtitle { color: var(--muted); font-size: 1.15rem; margin-bottom: 4rem; }
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn {
+      min-width: 220px;
+      padding: 1.25rem 2rem;
+      border-radius: 999px;
+      border: 1px solid rgba(245,243,239,0.12);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    .btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .btn strong { font-size: 1.15rem; font-weight: 700; }
+    .btn small { color: var(--muted); font-size: 0.8rem; }
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      color: var(--muted);
+      margin: 2rem 0;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(245,243,239,0.1);
+    }
+    @media (max-width: 640px) {
+      h1 { font-size: 3rem; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="eyebrow">Call to Bar Dinner Edition</div>
+    <h1>The Bar Games</h1>
+    <p class="subtitle">Five short, law-flavoured party games for two players.</p>
+
+    <div class="actions">
+      <button class="btn" onclick="alert('Same screen mode')">
+        <strong>Same Screen</strong>
+        <small>Keyboard split play — no WiFi</small>
+      </button>
+      <button class="btn" onclick="alert('Phone mode')">
+        <strong>Use Our Phones</strong>
+        <small>Scan QR code to join</small>
+      </button>
+    </div>
+
+    <div class="divider">or</div>
+
+    <p style="color:var(--muted);font-size:0.85rem;">Real lawsuits, fake lawsuits, fast buzzers, and bad legal jokes.</p>
+  </div>
+  <p style="margin-top:2rem;color:var(--muted);font-size:0.8rem;">Variant 3: Minimal Ritual — huge type, pill buttons, calm dark theatre.</p>
+</body>
+</html>

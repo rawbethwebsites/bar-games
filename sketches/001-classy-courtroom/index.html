@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Variant: Classy Courtroom — The Bar Games</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a0f0a;
+      --parchment: #f4e9d6;
+      --gold: #c9a227;
+      --red: #b5322e;
+      --blue: #2e5db5;
+      --dark: #0d0806;
+      --muted: #8a7f72;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--parchment);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+    .frame {
+      width: min(960px, 95vw);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 24px;
+      padding: 3rem;
+      background: radial-gradient(circle at 50% 0%, rgba(201,162,39,0.08), transparent 60%), var(--bg);
+      box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+    }
+    .seal {
+      width: 80px;
+      height: 80px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      margin: 0 auto 1.5rem;
+      color: var(--gold);
+    }
+    h1 {
+      font-family: 'Cinzel', serif;
+      font-size: 3.5rem;
+      text-align: center;
+      margin-bottom: 0.5rem;
+      letter-spacing: 0.05em;
+    }
+    .subtitle { text-align: center; color: var(--muted); font-size: 1.1rem; margin-bottom: 3rem; }
+    .mode-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .mode-card {
+      border: 1px solid rgba(244,233,214,0.15);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: rgba(244,233,214,0.03);
+    }
+    .mode-card:hover {
+      border-color: var(--gold);
+      background: rgba(201,162,39,0.1);
+      transform: translateY(-3px);
+    }
+    .mode-card .icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .mode-card h3 { font-family: 'Cinzel', serif; font-size: 1.4rem; margin-bottom: 0.5rem; }
+    .mode-card p { color: var(--muted); font-size: 0.9rem; }
+    @media (max-width: 640px) {
+      .mode-grid { grid-template-columns: 1fr; }
+      h1 { font-size: 2.2rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <div class="seal">⚖</div>
+    <h1>The Bar Games</h1>
+    <p class="subtitle">Five law-flavoured party games for two players</p>
+
+    <div class="mode-grid">
+      <div class="mode-card" onclick="alert('Same screen mode')">
+        <span class="icon">⌨</span>
+        <h3>Same Screen</h3>
+        <p>Always works. No WiFi needed.</p>
+      </div>
+      <div class="mode-card" onclick="alert('Phone mode')">
+        <span class="icon">📱</span>
+        <h3>Use Our Phones</h3>
+        <p>Scan a QR code to join.</p>
+      </div>
+    </div>
+  </div>
+  <p style="margin-top:1.5rem;color:var(--muted);font-size:0.8rem;">Variant 1: Classy Courtroom — ornate framing, gold accents, formal serif headings.</p>
+</body>
+</html>
