@@ -115,6 +115,22 @@
     .buzzer:active { transform: scale(0.97); }
     .buzzer.real { background: var(--neon-blue); color: #000; box-shadow: 0 0 30px rgba(5,217,232,0.35); margin-bottom: 2vh; }
     .buzzer.fake { background: var(--neon-red); color: #000; box-shadow: 0 0 30px rgba(255,42,109,0.35); }
+    /* adaptive layouts */
+    #game-panel { flex-direction: column; padding: 1.2rem; gap: 1.2rem; }
+    #game-title { font-family: 'Orbitron', sans-serif; font-size: 1rem; letter-spacing: 0.06em; color: var(--neon-gold); text-align: center; margin-top: 2.4rem; }
+    #pad { flex: 1; display: flex; flex-direction: column; gap: 1.2rem; width: 100%; }
+    .buzz-single { flex: 1; border: none; border-radius: 24px; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: clamp(2rem, 12vw, 3.5rem); letter-spacing: 0.05em; color: #000; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform 0.08s; }
+    .buzz-single:active { transform: scale(0.97); }
+    .buzz-single.red { background: var(--neon-red); box-shadow: 0 0 40px rgba(255,42,109,0.4); }
+    .buzz-single.blue { background: var(--neon-blue); box-shadow: 0 0 40px rgba(5,217,232,0.4); }
+    .pad-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1rem; width: 100%; }
+    .pad-btn { border: none; border-radius: 20px; font-family: 'Orbitron', sans-serif; font-weight: 900; font-size: clamp(2rem, 10vw, 3rem); color: #000; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform 0.08s; background: var(--neon-gold); }
+    .pad-btn:active { transform: scale(0.95); }
+    .pad-btn.red { background: var(--neon-red); }
+    .pad-btn.blue { background: var(--neon-blue); }
+    .wait-msg { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); font-size: 1.1rem; padding: 2rem; }
+    .flash { animation: flash 0.25s; }
+    @keyframes flash { from { filter: brightness(1.6); } to { filter: brightness(1); } }
     #status {
       position: fixed;
       top: 1rem;
@@ -143,8 +159,8 @@
   </div>
 
   <div id="game-panel">
-    <button class="buzzer real" data-action="real">REAL</button>
-    <button class="buzzer fake" data-action="fake">FAKE</button>
+    <div id="game-title">Waiting for the game…</div>
+    <div id="pad"><div class="wait-msg">Waiting for the host to start a game…</div></div>
   </div>
 
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
@@ -165,26 +181,53 @@
       });
     });
 
+    function send(action) {
+      if (!socket || !room) return;
+      socket.emit('player-action', { action, side });
+      if (navigator.vibrate) navigator.vibrate(30);
+    }
+
+    // Build the control layout for the active game.
+    function renderControls(scheme, title) {
+      const pad = document.getElementById('pad');
+      document.getElementById('game-title').textContent = title || 'Get ready…';
+      pad.innerHTML = '';
+
+      const mkBtn = (label, action, cls, node) => {
+        const b = document.createElement('button');
+        b.className = cls; b.textContent = label;
+        const fire = (e) => { e.preventDefault(); b.classList.remove('flash'); void b.offsetWidth; b.classList.add('flash'); send(action); };
+        b.addEventListener('touchstart', fire, { passive: false });
+        b.addEventListener('mousedown', fire);
+        node.appendChild(b);
+      };
+
+      if (scheme === 'buzz') {
+        mkBtn('BUZZ', 'buzz', 'buzz-single ' + side, pad);
+      } else if (scheme === 'abcd') {
+        const grid = document.createElement('div'); grid.className = 'pad-grid'; pad.appendChild(grid);
+        ['A', 'B', 'C', 'D'].forEach(l => mkBtn(l, l.toLowerCase(), 'pad-btn ' + side, grid));
+      } else { // realfake (default)
+        mkBtn('REAL', 'real', 'buzz-single blue', pad);
+        mkBtn('FAKE', 'fake', 'buzz-single red', pad);
+      }
+    }
+
     document.getElementById('join-btn').addEventListener('click', () => {
       room = document.getElementById('room-input').value.toUpperCase();
       if (!room || !side) return alert('Enter room code and pick a side.');
       socket = io();
+
+      socket.on('host-broadcast', (payload) => {
+        if (payload && payload.type === 'controls') renderControls(payload.scheme, payload.title);
+      });
+
       socket.emit('join-room', { code: room, side }, (res) => {
         if (!res.ok) return alert(res.error);
         document.getElementById('join-panel').style.display = 'none';
         document.getElementById('game-panel').style.display = 'flex';
-        document.getElementById('status').textContent = `Connected as ${side.toUpperCase()}. Tap to answer.`;
+        document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
       });
-    });
-
-    document.querySelectorAll('.buzzer').forEach(btn => {
-      const send = (e) => {
-        e.preventDefault();
-        if (!socket || !room) return;
-        socket.emit('player-action', { action: btn.dataset.action, side });
-      };
-      btn.addEventListener('touchstart', send, { passive: false });
-      btn.addEventListener('mousedown', send);
     });
   </script>
 </body>
