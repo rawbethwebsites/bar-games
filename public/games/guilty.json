@@ -1,0 +1,22 @@
+[
+  { "id": 1, "text": "A woman sued a fast-food chain after spilling hot coffee on herself.", "isReal": true, "verdict": "Real — she won. The coffee was dangerously hot. (Liebeck v. McDonald's, 1994)", "difficulty": "easy" },
+  { "id": 2, "text": "A man sued a beer company claiming their adverts falsely promised him a fun social life.", "isReal": true, "verdict": "Real — he lost. The court was not amused.", "difficulty": "easy" },
+  { "id": 3, "text": "A burglar sued homeowners after getting stuck in their garage and living on dog food for days.", "isReal": true, "verdict": "Real — and he actually won a settlement.", "difficulty": "medium" },
+  { "id": 4, "text": "Someone sued themselves and asked the state to pay the damages.", "isReal": true, "verdict": "Real — it happened.", "difficulty": "medium" },
+  { "id": 5, "text": "A man tried to divorce his wife by delivering the papers via carrier pigeon.", "isReal": false, "verdict": "Fake — carrier pigeons are not recognised process servers.", "difficulty": "easy" },
+  { "id": 6, "text": "A company was sued because its 'magic diet tea' did not, in fact, teleport fat away.", "isReal": false, "verdict": "Fake — no quantum weight-loss products have reached court.", "difficulty": "easy" },
+  { "id": 7, "text": "A man sued God for the weather and asked for an injunction against storms.", "isReal": true, "verdict": "Real — the case was dismissed for lack of service.", "difficulty": "hard" },
+  { "id": 8, "text": "A prisoner sued himself for violating his own civil rights and demanded $5 million.", "isReal": true, "verdict": "Real — he asked the state to pay since he was a ward of the state.", "difficulty": "medium" },
+  { "id": 9, "text": "A woman sued a zoo after a peacock screamed at her and ruined her marriage proposal.", "isReal": false, "verdict": "Fake — peacocks are dramatic, but not legally liable.", "difficulty": "easy" },
+  { "id": 10, "text": "A tenant sued their landlord because the house was haunted and no ghosts were disclosed.", "isReal": false, "verdict": "Fake — no material-ghost disclosure requirement yet.", "difficulty": "medium" },
+  { "id": 11, "text": "A judge once ruled a burrito is not a sandwich.", "isReal": true, "verdict": "Real — the famous 'what is a sandwich' case set food-law precedent.", "difficulty": "easy" },
+  { "id": 12, "text": "A company trademarked the sound of a chainsaw starting.", "isReal": false, "verdict": "Fake — though some sounds are trademarked, this one is not.", "difficulty": "medium" },
+  { "id": 13, "text": "A man sued a dry cleaner for $67 million over a missing pair of trousers.", "isReal": true, "verdict": "Real — he lost and the case became legendary.", "difficulty": "medium" },
+  { "id": 14, "text": "A city council banned ice cream trucks after one gave a judge brain freeze.", "isReal": false, "verdict": "Fake — judges have ruled through worse.", "difficulty": "easy" },
+  { "id": 15, "text": "A woman sued Google Maps after she walked onto a motorway following its directions.", "isReal": true, "verdict": "Real — she sued for being led into traffic.", "difficulty": "medium" },
+  { "id": 16, "text": "A cat was called as a witness in a murder trial and had to 'swear' on a Bible.", "isReal": false, "verdict": "Fake — cats make unreliable witnesses.", "difficulty": "easy" },
+  { "id": 17, "text": "A student sued their university for not warning them that law school was hard.", "isReal": false, "verdict": "Fake — but the feeling is real.", "difficulty": "easy" },
+  { "id": 18, "text": "A court once had to decide whether a Jaffa Cake was a cake or a biscuit for tax purposes.", "isReal": true, "verdict": "Real — it was ruled a cake, saving it from higher biscuit tax.", "difficulty": "medium" },
+  { "id": 19, "text": "A lawyer objected to his own question in the middle of asking it.", "isReal": false, "verdict": "Fake — but every litigator has wanted to.", "difficulty": "easy" },
+  { "id": 20, "text": "A man sued his neighbour because their dog mocked him by copying his walk.", "isReal": false, "verdict": "Fake — no legal remedy for canine impressions.", "difficulty": "easy" }
+]

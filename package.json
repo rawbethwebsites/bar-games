@@ -1,0 +1,18 @@
+{
+  "name": "bar-games",
+  "version": "0.1.0",
+  "description": "The Bar Games — 5 short law-flavoured party games for the Call to Bar dinner.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["games", "party", "law", "websocket", "socket.io"],
+  "author": "The Boost Nation",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.19.2",
+    "socket.io": "^4.7.5",
+    "qrcode": "^1.5.3"
+  }
+}
