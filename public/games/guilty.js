@@ -162,13 +162,13 @@ function createGuiltyGame(app) {
   function onKey(key) {
     if (!currentCase || waitingReveal) return;
 
-    // Left player: A = real, D = fake
-    if (key === 'a') lockIn('red', true);
-    if (key === 'd') lockIn('red', false);
+    // Left player: A = fake, D = real
+    if (key === 'a') lockIn('red', false);
+    if (key === 'd') lockIn('red', true);
 
-    // Right player: J = real, L = fake
-    if (key === 'j') lockIn('blue', true);
-    if (key === 'l') lockIn('blue', false);
+    // Right player: J = fake, L = real
+    if (key === 'j') lockIn('blue', false);
+    if (key === 'l') lockIn('blue', true);
   }
 
   function onPhoneAction(action, side) {
