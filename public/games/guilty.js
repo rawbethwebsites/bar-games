@@ -120,6 +120,7 @@ function createGuiltyGame(app) {
 
     app.scores.red += redPoints;
     app.scores.blue += bluePoints;
+    if (typeof saveScores === 'function') saveScores();
     updateScoreBar();
 
     setTimeout(nextOrEnd, 3500);

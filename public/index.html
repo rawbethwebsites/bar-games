@@ -73,9 +73,16 @@
     <section id="game" class="screen">
       <div class="game-ui">
         <div class="score-bar top-bar absolute">
-          <div class="left-score"><span class="label">PROSECUTION</span><span class="score red">0</span></div>
+          <button class="back" onclick="showScreen('home')">🏠 HOME</button>
+          <div class="left-score">
+            <span class="label">PROSECUTION</span>
+            <span class="score red">0</span>
+          </div>
           <div class="vs">VS</div>
-          <div class="right-score"><span class="score blue">0</span><span class="label">DEFENCE</span></div>
+          <div class="right-score">
+            <span class="score blue">0</span>
+            <span class="label">DEFENCE</span>
+          </div>
         </div>
 
         <div id="game-stage"></div>

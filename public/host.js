@@ -7,6 +7,19 @@ const App = {
   selectedGame: null,
 };
 
+function loadScores() {
+  try {
+    const saved = localStorage.getItem('bar-games-scores');
+    if (saved) App.scores = JSON.parse(saved);
+  } catch (e) { /* ignore */ }
+}
+
+function saveScores() {
+  try {
+    localStorage.setItem('bar-games-scores', JSON.stringify(App.scores));
+  } catch (e) { /* ignore */ }
+}
+
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -19,6 +32,14 @@ function updateScoreBar() {
 
 function resetScores() {
   App.scores = { red: 0, blue: 0 };
+  saveScores();
+  updateScoreBar();
+}
+
+function addPoints(red, blue) {
+  App.scores.red += red;
+  App.scores.blue += blue;
+  saveScores();
   updateScoreBar();
 }
 
@@ -46,16 +67,38 @@ function showVerdict(winner, callback) {
   stage.innerHTML = `
     <div class="winner-screen">
       <h2>Verdict!</h2>
-      <div class="winner-name">${winner === 'draw' ? 'The Court is Tied' : (winner === 'red' ? 'Prosecution Wins' : 'Defence Wins')}</div>
-      <div class="mode-select" style="margin-top:2rem;justify-content:center;">
+      <div class="winner-name" style="margin-bottom:0.5rem;">${winner === 'draw' ? 'The Court is Tied' : (winner === 'red' ? 'Prosecution Wins' : 'Defence Wins')}</div>
+      <div style="color:var(--muted);font-size:1rem;margin-bottom:2rem;">
+        Running total — Prosecution: <span style="color:var(--neon-red);font-weight:800;">${App.scores.red}</span> · Defence: <span style="color:var(--neon-blue);font-weight:800;">${App.scores.blue}</span>
+      </div>
+      <div class="mode-select" style="margin-top:1rem;justify-content:center;">
         <button class="mode-btn" id="rematch-btn">Rematch</button>
         <button class="mode-btn back-to-lobby">Back to Menu</button>
+        <button class="mode-btn" id="home-btn">Homepage</button>
       </div>
     </div>
   `;
 
   document.getElementById('rematch-btn').onclick = () => callback('rematch');
   document.querySelector('.back-to-lobby').onclick = () => callback('menu');
+  document.getElementById('home-btn').onclick = () => showScreen('home');
+}
+
+function renderLeaderboard(container) {
+  const total = App.scores.red + App.scores.blue;
+  let html = '';
+  if (total > 0) {
+    html = `
+      <div class="leaderboard" style="margin-top:1.5rem;padding:1rem;border:1px solid rgba(255,255,255,0.1);border-radius:14px;background:rgba(255,255,255,0.03);">
+        <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.9rem;letter-spacing:0.1em;margin-bottom:0.75rem;">🏆 RUNNING LEADERBOARD</div>
+        <div style="display:flex;justify-content:space-between;gap:1rem;font-size:1.3rem;font-weight:800;">
+          <span style="color:var(--neon-red);">Prosecution ${App.scores.red}</span>
+          <span style="color:var(--neon-blue);">Defence ${App.scores.blue}</span>
+        </div>
+      </div>
+    `;
+  }
+  if (container) container.insertAdjacentHTML('beforeend', html);
 }
 
 function initSocket() {
@@ -113,8 +156,8 @@ document.querySelectorAll('[data-mode]').forEach(btn => {
           text: `${window.location.origin}/controller.html?room=${code}`,
           width: 200,
           height: 200,
-          colorDark: '#c9a227',
-          colorLight: '#1a0f0a',
+          colorDark: '#0b0c15',
+          colorLight: '#ffffff',
         });
         document.getElementById('start-game-btn').onclick = () => {
           resetScores();
@@ -158,4 +201,9 @@ if (window.location.pathname.includes('controller')) {
   initSocket();
 }
 
+loadScores();
 updateScoreBar();
+
+// Show leaderboard on home screen
+const homeScreen = document.getElementById('home');
+if (homeScreen) renderLeaderboard(homeScreen.querySelector('.arcade-card'));
