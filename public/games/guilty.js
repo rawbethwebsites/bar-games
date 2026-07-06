@@ -80,6 +80,7 @@ function createGuiltyGame(app) {
       const isReal = btn.classList.contains('choice-real');
       const isSelected = (answer === true && isReal) || (answer === false && !isReal);
       if (!isSelected) btn.classList.add('locked');
+      else btn.classList.add('selected');
     });
 
     if (locked.red && locked.blue) {
@@ -170,10 +171,13 @@ function createGuiltyGame(app) {
   function onKey(key) {
     if (!currentCase || waitingReveal) return;
 
-    if (key === 'a') lockIn('red', true);
-    if (key === 'd') lockIn('red', false);
-    if (key === 'j') lockIn('blue', true);
-    if (key === 'l') lockIn('blue', false);
+    // Left player: A/← = Real, D/→ = Fake
+    if (key === 'a' || key === 'arrowleft') lockIn('red', true);
+    if (key === 'd' || key === 'arrowright') lockIn('red', false);
+
+    // Right player: J/numpad4 = Real, L/numpad6 = Fake
+    if (key === 'j' || key === '4') lockIn('blue', true);
+    if (key === 'l' || key === '6') lockIn('blue', false);
   }
 
   function onPhoneAction(action, side) {
