@@ -169,10 +169,10 @@ function createGuiltyGame(app) {
   function onKey(key) {
     if (!currentCase || waitingReveal) return;
 
-    if (key === 'a') lockIn('red', false);
-    if (key === 'd') lockIn('red', true);
-    if (key === 'j') lockIn('blue', false);
-    if (key === 'l') lockIn('blue', true);
+    if (key === 'a') lockIn('red', true);
+    if (key === 'd') lockIn('red', false);
+    if (key === 'j') lockIn('blue', true);
+    if (key === 'l') lockIn('blue', false);
   }
 
   function onPhoneAction(action, side) {
