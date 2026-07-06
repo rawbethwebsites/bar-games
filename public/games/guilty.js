@@ -33,12 +33,12 @@ function createGuiltyGame(app) {
         <p style="font-size:1.6rem;line-height:1.5;">${currentCase.text}</p>
       </div>
       <div class="choices">
-        <button class="choice-btn choice-fake" data-side="red">FAKE</button>
         <button class="choice-btn choice-real" data-side="red">REAL</button>
+        <button class="choice-btn choice-fake" data-side="red">FAKE</button>
       </div>
       <div class="choices">
-        <button class="choice-btn choice-fake" data-side="blue">FAKE</button>
         <button class="choice-btn choice-real" data-side="blue">REAL</button>
+        <button class="choice-btn choice-fake" data-side="blue">FAKE</button>
       </div>
     `;
 
