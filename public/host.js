@@ -15,6 +15,42 @@ function loadScores() {
   } catch (e) { /* ignore */ }
 }
 
+// ── No-repeat across sessions ──────────────────────────────────
+// Each game stores the indices of questions it has used in localStorage.
+// When building a deck, we filter out recently-used questions first,
+// then fall back to the full pool if we've exhausted fresh ones.
+function getUnusedItems(bank, gameKey, count) {
+  const seenKey = 'bar-games-seen-' + gameKey;
+  let seen = [];
+  try { seen = JSON.parse(localStorage.getItem(seenKey)) || []; } catch (e) {}
+
+  // Partition into unseen and seen
+  const unseen = bank.filter((_, i) => !seen.includes(i));
+  const seenItems = bank.filter((_, i) => seen.includes(i));
+
+  // Shuffle both pools
+  const sh = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const unseenShuffled = sh(unseen);
+  const seenShuffled = sh(seenItems);
+
+  // Take from unseen first, fill from seen if needed
+  const picked = unseenShuffled.slice(0, count);
+  if (picked.length < count) {
+    const need = count - picked.length;
+    picked.push(...seenShuffled.slice(0, need));
+  }
+
+  // Record which indices we used (by matching object identity)
+  const usedIndices = picked.map(item => bank.indexOf(item));
+  const newSeen = [...new Set([...seen, ...usedIndices])];
+  // Keep the list from growing forever — only track the last N items
+  const MAX_SEEN = Math.max(bank.length - count, count * 2);
+  const trimmedSeen = newSeen.slice(-MAX_SEEN);
+  try { localStorage.setItem(seenKey, JSON.stringify(trimmedSeen)); } catch (e) {}
+
+  return picked;
+}
+
 function saveScores() {
   try {
     localStorage.setItem('bar-games-scores', JSON.stringify(App.scores));

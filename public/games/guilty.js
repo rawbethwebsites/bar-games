@@ -14,7 +14,7 @@ function createGuiltyGame(app) {
   async function loadCases() {
     const res = await fetch('games/guilty.json');
     const data = await res.json();
-    cases = shuffle([...data]);
+    cases = getUnusedItems([...data], 'guilty', data.length);
   }
 
   function shuffle(arr) {

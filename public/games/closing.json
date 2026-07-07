@@ -1,10 +1,210 @@
 [
-  { "prompt": "Ladies and gentlemen of the jury, my client is not guilty because ___.", "options": ["the evidence is purely circumstantial", "a squirrel ate the contract", "the timeline simply does not fit", "the witness was daydreaming", "no motive was ever established", "the real culprit was procrastination", "the alibi is rock solid", "everyone was watching the football match"] },
-  { "prompt": "The prosecution wants you to believe ___, but the facts tell a different story.", "options": ["this was premeditated", "the cookie jar was empty", "there was a conspiracy", "the dog planned it all", "money was the only motive", "the moon was full that night", "my client had a grudge", "aliens were involved"] },
-  { "prompt": "In conclusion, I urge you to find my client ___.", "options": ["not guilty", "guilty of being fabulous", "innocent of all charges", "the real victim here", "free to go home", "guilty only of bad timing", "not responsible by reason of common sense", "deserving of an apology"] },
-  { "prompt": "The key witness cannot be trusted because ___.", "options": ["their story changed three times", "they sell umbrellas indoors", "they had motive to lie", "they claimed they were asleep and awake simultaneously", "they were nowhere near the scene", "they are colourblind but described the dress", "they stand to profit from a conviction", "they blamed it all on a ghost"] },
-  { "prompt": "Reasonable doubt exists when ___.", "options": ["the evidence does not add up", "the bus was late", "another explanation fits the facts", "someone else confessed", "the timeline is impossible", "the fingerprints belong to a cat", "the security footage is missing", "the story keeps changing"] },
-  { "prompt": "My client's actions were misunderstood; in reality, ___.", "options": ["they were helping, not stealing", "they were rehearsing a play", "they had permission to enter", "it was a birthday surprise gone wrong", "they were returning a lost item", "the door was already open", "they acted in self-defence", "it was a case of mistaken identity"] },
-  { "prompt": "The so-called weapon proves nothing because ___.", "options": ["it has no fingerprints", "it is a prop from a film", "it could belong to anyone", "it was found in a public bin", "my client has never touched it", "it was reported missing weeks before", "the chain of custody is broken", "it is actually a kitchen utensil"] },
-  { "prompt": "Justice demands that you ___.", "options": ["look past emotion", "ignore the catchy opening song", "weigh only the evidence", "send a message against false charges", "protect the innocent", "consider the missing alibi", "return a just verdict", "remember the presumption of innocence"] }
+  {
+    "prompt": "Ladies and gentlemen of the jury, my client is not guilty because ___.",
+    "options": [
+      "the evidence is purely circumstantial",
+      "a squirrel ate the contract",
+      "the timeline simply does not fit",
+      "the witness was daydreaming",
+      "no motive was ever established",
+      "the real culprit was procrastination",
+      "the alibi is rock solid",
+      "everyone was watching the football match"
+    ]
+  },
+  {
+    "prompt": "The prosecution wants you to believe ___, but the facts tell a different story.",
+    "options": [
+      "this was premeditated",
+      "the cookie jar was empty",
+      "there was a conspiracy",
+      "the dog planned it all",
+      "money was the only motive",
+      "the moon was full that night",
+      "my client had a grudge",
+      "aliens were involved"
+    ]
+  },
+  {
+    "prompt": "In conclusion, I urge you to find my client ___.",
+    "options": [
+      "not guilty",
+      "guilty of being fabulous",
+      "innocent of all charges",
+      "the real victim here",
+      "free to go home",
+      "guilty only of bad timing",
+      "not responsible by reason of common sense",
+      "deserving of an apology"
+    ]
+  },
+  {
+    "prompt": "The key witness cannot be trusted because ___.",
+    "options": [
+      "their story changed three times",
+      "they sell umbrellas indoors",
+      "they had motive to lie",
+      "they claimed they were asleep and awake simultaneously",
+      "they were nowhere near the scene",
+      "they are colourblind but described the dress",
+      "they stand to profit from a conviction",
+      "they blamed it all on a ghost"
+    ]
+  },
+  {
+    "prompt": "Reasonable doubt exists when ___.",
+    "options": [
+      "the evidence does not add up",
+      "the bus was late",
+      "another explanation fits the facts",
+      "someone else confessed",
+      "the timeline is impossible",
+      "the fingerprints belong to a cat",
+      "the security footage is missing",
+      "the story keeps changing"
+    ]
+  },
+  {
+    "prompt": "My client's actions were misunderstood; in reality, ___.",
+    "options": [
+      "they were helping, not stealing",
+      "they were rehearsing a play",
+      "they had permission to enter",
+      "it was a birthday surprise gone wrong",
+      "they were returning a lost item",
+      "the door was already open",
+      "they acted in self-defence",
+      "it was a case of mistaken identity"
+    ]
+  },
+  {
+    "prompt": "The so-called weapon proves nothing because ___.",
+    "options": [
+      "it has no fingerprints",
+      "it is a prop from a film",
+      "it could belong to anyone",
+      "it was found in a public bin",
+      "my client has never touched it",
+      "it was reported missing weeks before",
+      "the chain of custody is broken",
+      "it is actually a kitchen utensil"
+    ]
+  },
+  {
+    "prompt": "Justice demands that you ___.",
+    "options": [
+      "look past emotion",
+      "ignore the catchy opening song",
+      "weigh only the evidence",
+      "send a message against false charges",
+      "protect the innocent",
+      "consider the missing alibi",
+      "return a just verdict",
+      "remember the presumption of innocence"
+    ]
+  },
+  {
+    "prompt": "The prosecution has failed to prove ___.",
+    "options": [
+      "motive beyond a reasonable doubt",
+      "that my client is not a hologram",
+      "that the alleged incident even occurred",
+      "that the so-called witness was conscious",
+      "intent at the relevant time",
+      "that the door was actually a door",
+      "that anyone was harmed",
+      "that the calendar is reliable"
+    ]
+  },
+  {
+    "prompt": "Ask yourselves: would a guilty person ___.",
+    "options": [
+      "voluntarily speak to the police",
+      "live-tweet their own alibi",
+      "come to court wearing that tie",
+      "invite their accuser to brunch",
+      "hand over the receipts without being asked",
+      "name their boat 'Innocent'",
+      "testify with that much confidence",
+      "still be wearing the alleged hat"
+    ]
+  },
+  {
+    "prompt": "The circumstantial evidence is a house of cards; remove one card and ___.",
+    "options": [
+      "the entire case collapses",
+      "you just have a normal Tuesday",
+      "the theory becomes fiction",
+      "the prosecution owes us an apology",
+      "my client is clearly free to go",
+      "the story falls apart completely",
+      "what remains is reasonable doubt",
+      "the only thing proven is the defendant's patience"
+    ]
+  },
+  {
+    "prompt": "My client has already paid a price \u2014 ___.",
+    "options": [
+      "in lost reputation",
+      "in 200 hours of mandatory mindfulness",
+      "in sleepless nights",
+      "in cancelled brunch invitations",
+      "in legal fees that would buy a boat",
+      "in public humiliation",
+      "in the loss of their favourite mug",
+      "in a year of group chat exile"
+    ]
+  },
+  {
+    "prompt": "A conviction here would send the message that ___.",
+    "options": [
+      "being weird is a crime",
+      "intent does not matter",
+      "appearance outweighs evidence",
+      "you can be jailed for a bad haircut",
+      "circumstances count for nothing",
+      "the presumption of innocence is optional",
+      "being in the wrong place is enough",
+      "the court values vibes over facts"
+    ]
+  },
+  {
+    "prompt": "I am not asking for sympathy; I am asking for ___.",
+    "options": [
+      "a verdict based on evidence",
+      "a verdict based on vibes",
+      "a fair weighing of the facts",
+      "ten minutes of common sense",
+      "the presumption of innocence to mean something",
+      "a jury that has not googled my client",
+      "the law to apply equally",
+      "one last dramatic pause"
+    ]
+  },
+  {
+    "prompt": "The right verdict is the one you can live with tomorrow \u2014 and that verdict is ___.",
+    "options": [
+      "not guilty",
+      "guilty of nothing but charm",
+      "an acquittal on all counts",
+      "a long lunch and a clear conscience",
+      "innocent beyond reasonable doubt",
+      "free, with our thanks",
+      "not guilty, with relief",
+      "the only one the evidence supports"
+    ]
+  },
+  {
+    "prompt": "The prosecution's case rests on one witness, and that witness ___.",
+    "options": [
+      "has changed their story twice",
+      "admitted they weren't wearing their glasses",
+      "has a pending lawsuit against my client",
+      "was seen arguing with the victim",
+      "has a criminal record for fraud",
+      "cannot even remember the date",
+      "was paid for their testimony",
+      "has every reason to lie"
+    ]
+  }
 ]

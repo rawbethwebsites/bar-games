@@ -94,7 +94,7 @@ function createClosingGame(app) {
 
   async function start() {
     if (!bank.length) await load();
-    deck = shuffle(bank).slice(0, MAXR);
+    deck = getUnusedItems(bank, 'closing', MAXR);
     round = 0; app.scores = { red: 0, blue: 0 };
     updateScoreBar(); setHint(); showScreen('game');
     nextRound();

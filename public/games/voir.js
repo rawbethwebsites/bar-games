@@ -98,7 +98,7 @@ function createVoirGame(app) {
 
   async function start() {
     if (!bank.length) await load();
-    deck = shuffle(bank).map(j => ({ pool: shuffle(bank).slice(0, 5) })).slice(0, MAXR);
+    deck = getUnusedItems(bank, 'voir', MAXR).map(j => ({ pool: shuffle(bank).slice(0, 5) }));
     round = 0; app.scores = { red: 0, blue: 0 };
     updateScoreBar(); setHint(); showScreen('game');
     startRound();

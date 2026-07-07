@@ -1,12 +1,262 @@
 [
-  { "prompt": "The defendant's alibi was ___.", "options": ["asleep in a bouncy castle", "at a very important nap", "too handsome to commit crimes", "allegedly a ghost", "being chased by a goose", "at brunch, obviously", "practising the recorder", "emotionally unavailable"] },
-  { "prompt": "The judge banged the gavel and shouted ___.", "options": ["“Order! …of fries, please”", "“This court finds you fabulous”", "“Recess — go play outside”", "“Overruled and underwhelmed”", "“I object to that outfit”", "“Silence, I'm buffering”", "“Case closed, I'm hungry”", "“Bailiff, fetch snacks”"] },
-  { "prompt": "The key piece of evidence was ___.", "options": ["a suspiciously smug cat", "one (1) crumb", "a very telling group chat", "vibes, mostly", "a half-eaten sandwich", "an incriminating playlist", "a single glittery shoe", "the wifi password"] },
-  { "prompt": "The witness swore to tell the truth, then ___.", "options": ["immediately winked", "asked for a snack", "began to freestyle", "fainted dramatically", "blamed their horoscope", "started a podcast", "denied knowing gravity", "produced a puppet"] },
-  { "prompt": "The defendant was found guilty of ___.", "options": ["excessive parking", "aggressive optimism", "crimes against fashion", "stealing the show", "being too loud at brunch", "impersonating a barista", "unlicensed dad jokes", "littering with confetti"] },
-  { "prompt": "The lawyer's closing argument was simply ___.", "options": ["“trust me, honestly”", "a dramatic mic drop", "an interpretive dance", "“no further questions, vibes”", "one very bold slide", "“my client is baby”", "a strongly worded meme", "45 minutes of silence"] },
-  { "prompt": "The jury deliberated for hours over ___.", "options": ["where to order lunch", "the defendant's haircut", "who took the pen", "the meaning of 'reasonable'", "the best selfie angle", "the thermostat setting", "whether ghosts can testify", "the courtroom playlist"] },
-  { "prompt": "The suspect's getaway vehicle was ___.", "options": ["a rented swan pedalo", "a shopping trolley", "a very slow scooter", "an emotional-support horse", "the number 47 bus", "a pizza delivery bike", "rollerblades, tragically", "a bouncy castle (again)"] },
-  { "prompt": "The courtroom gasped when ___.", "options": ["the twin walked in", "the cat objected", "the judge stood to dance", "someone yelled 'plot twist'", "the lights flickered ominously", "the stenographer rapped", "a goose entered", "the wifi came back"] },
-  { "prompt": "Exhibit A was ___.", "options": ["a deeply cursed selfie", "one suspicious receipt", "a napkin with plans on it", "a passive-aggressive note", "a friendship bracelet", "a half-finished diary", "an incriminating fridge magnet", "a mixtape titled 'oops'"] }
+  {
+    "prompt": "The defendant's alibi was ___.",
+    "options": [
+      "asleep in a bouncy castle",
+      "at a very important nap",
+      "too handsome to commit crimes",
+      "allegedly a ghost",
+      "being chased by a goose",
+      "at brunch, obviously",
+      "practising the recorder",
+      "emotionally unavailable"
+    ]
+  },
+  {
+    "prompt": "The judge banged the gavel and shouted ___.",
+    "options": [
+      "\u201cOrder! \u2026of fries, please\u201d",
+      "\u201cThis court finds you fabulous\u201d",
+      "\u201cRecess \u2014 go play outside\u201d",
+      "\u201cOverruled and underwhelmed\u201d",
+      "\u201cI object to that outfit\u201d",
+      "\u201cSilence, I'm buffering\u201d",
+      "\u201cCase closed, I'm hungry\u201d",
+      "\u201cBailiff, fetch snacks\u201d"
+    ]
+  },
+  {
+    "prompt": "The key piece of evidence was ___.",
+    "options": [
+      "a suspiciously smug cat",
+      "one (1) crumb",
+      "a very telling group chat",
+      "vibes, mostly",
+      "a half-eaten sandwich",
+      "an incriminating playlist",
+      "a single glittery shoe",
+      "the wifi password"
+    ]
+  },
+  {
+    "prompt": "The witness swore to tell the truth, then ___.",
+    "options": [
+      "immediately winked",
+      "asked for a snack",
+      "began to freestyle",
+      "fainted dramatically",
+      "blamed their horoscope",
+      "started a podcast",
+      "denied knowing gravity",
+      "produced a puppet"
+    ]
+  },
+  {
+    "prompt": "The defendant was found guilty of ___.",
+    "options": [
+      "excessive parking",
+      "aggressive optimism",
+      "crimes against fashion",
+      "stealing the show",
+      "being too loud at brunch",
+      "impersonating a barista",
+      "unlicensed dad jokes",
+      "littering with confetti"
+    ]
+  },
+  {
+    "prompt": "The lawyer's closing argument was simply ___.",
+    "options": [
+      "\u201ctrust me, honestly\u201d",
+      "a dramatic mic drop",
+      "an interpretive dance",
+      "\u201cno further questions, vibes\u201d",
+      "one very bold slide",
+      "\u201cmy client is baby\u201d",
+      "a strongly worded meme",
+      "45 minutes of silence"
+    ]
+  },
+  {
+    "prompt": "The jury deliberated for hours over ___.",
+    "options": [
+      "where to order lunch",
+      "the defendant's haircut",
+      "who took the pen",
+      "the meaning of 'reasonable'",
+      "the best selfie angle",
+      "the thermostat setting",
+      "whether ghosts can testify",
+      "the courtroom playlist"
+    ]
+  },
+  {
+    "prompt": "The suspect's getaway vehicle was ___.",
+    "options": [
+      "a rented swan pedalo",
+      "a shopping trolley",
+      "a very slow scooter",
+      "an emotional-support horse",
+      "the number 47 bus",
+      "a pizza delivery bike",
+      "rollerblades, tragically",
+      "a bouncy castle (again)"
+    ]
+  },
+  {
+    "prompt": "The courtroom gasped when ___.",
+    "options": [
+      "the twin walked in",
+      "the cat objected",
+      "the judge stood to dance",
+      "someone yelled 'plot twist'",
+      "the lights flickered ominously",
+      "the stenographer rapped",
+      "a goose entered",
+      "the wifi came back"
+    ]
+  },
+  {
+    "prompt": "Exhibit A was ___.",
+    "options": [
+      "a deeply cursed selfie",
+      "one suspicious receipt",
+      "a napkin with plans on it",
+      "a passive-aggressive note",
+      "a friendship bracelet",
+      "a half-finished diary",
+      "an incriminating fridge magnet",
+      "a mixtape titled 'oops'"
+    ]
+  },
+  {
+    "prompt": "The bailiff whispered to the judge, \u201c___\u201d.",
+    "options": [
+      "the jury has snacks now",
+      "someone brought their dog",
+      "the defendant is live-tweeting",
+      "the wifi is down again",
+      "the witness is a hologram",
+      "counsel has been googling you",
+      "the stenographer is crying",
+      "we're out of gavels"
+    ]
+  },
+  {
+    "prompt": "The defendant's excuse for missing court was ___.",
+    "options": [
+      "trapped under a cat",
+      "the algorithm made me do it",
+      "mercury was in retrograde",
+      "got stuck in a lift with a clown",
+      "my alarm respected my boundaries",
+      "chased by bees, your honour",
+      "the bus was too judgemental",
+      "my horoscope said 'stay home'"
+    ]
+  },
+  {
+    "prompt": "The expert witness was qualified because ___.",
+    "options": [
+      "they once watched every true-crime documentary",
+      "they have a PhD in vibes",
+      "they read a Wikipedia article last night",
+      "they've been to court before (as a defendant)",
+      "they own three magnifying glasses",
+      "their cat solves mysteries",
+      "they guessed correctly once in 2019",
+      "they saw an episode of Judge Judy"
+    ]
+  },
+  {
+    "prompt": "The courtroom sketch artist drew the defendant as ___.",
+    "options": [
+      "a very sad potato",
+      "an unbothered angel",
+      "a dramatic anime villain",
+      "a confused pigeon",
+      "a low-budget Bond villain",
+      "an overripe banana",
+      "a moderately disappointed owl",
+      "a Sims character with no traits"
+    ]
+  },
+  {
+    "prompt": "The prosecution's case relied entirely on ___.",
+    "options": [
+      "one blurry photo of a sandwich",
+      "a dream the witness had",
+      "an Instagram story from 2017",
+      "the defendant's Spotify history",
+      "a note that just said 'lol'",
+      "a receipt from a cheese shop",
+      "a screenshot of a screenshot",
+      " vibes and a hunch"
+    ]
+  },
+  {
+    "prompt": "The judge's ruling began with, \u201c___\u201d",
+    "options": [
+      "I have read the submissions and I am tired",
+      "after much deliberation and one snack",
+      "this court has seen some things",
+      "I will now ruin someone's Tuesday",
+      "having reviewed the cursed PowerPoint",
+      "I find this case suspiciously beige",
+      "the law is clear, the parties are not",
+      "I have been awake for 19 hours"
+    ]
+  },
+  {
+    "prompt": "The surprise witness was ___.",
+    "options": [
+      "the defendant's childhood imaginary friend",
+      "a talking parrot with opinions",
+      "the defendant's ex's new partner's dog walker",
+      "a man who only speaks in riddles",
+      "the local pigeon whisperer",
+      "a barista who remembers every order",
+      "the defendant's psychic",
+      "an influencer with 'receipts'"
+    ]
+  },
+  {
+    "prompt": "The court stenographer was overheard typing ___.",
+    "options": [
+      "'why am I here'",
+      "'this is going on my podcast'",
+      "'I could have been a dentist'",
+      "'send help and snacks'",
+      "'lol the defendant's tie is crooked'",
+      "'my shift ends NEVER'",
+      "'this belongs in a group chat'",
+      "'judges do not read these, right?'"
+    ]
+  },
+  {
+    "prompt": "The jury foreperson announced the verdict as ___.",
+    "options": [
+      "'guilty, but with respect'",
+      "'not guilty, your honour, also we're hungry'",
+      "'we couldn't agree so we flipped a coin'",
+      "'guilty of being extremely weird'",
+      "'not guilty \u2014 the cat did it'",
+      "'we're going to need more time, and crisps'",
+      "'guilty, but only of vibes'",
+      "'not guilty, and frankly we're exhausted'"
+    ]
+  },
+  {
+    "prompt": "The judge's final words before retiring were ___.",
+    "options": [
+      "I need a nap and a lawyer",
+      "Don't make me come back",
+      "Court adjourned, go touch grass",
+      "I'm putting myself in contempt",
+      "No further questions, forever",
+      "Bailiff, hold my gavel",
+      "I dissented in my own dream",
+      "Recess until I stop being tired"
+    ]
+  }
 ]
