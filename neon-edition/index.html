@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Bar Games — Neon Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07060f;--ink:#eef0ff;--muted:#8a8fbf;
+    --red:#ff2a6d;--blue:#05d9e8;--gold:#ffd300;--violet:#a56bff;--green:#39ff9e;
+    --panel:rgba(22,20,42,.6);--border:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;min-height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);position:relative;overflow-x:hidden;
+    display:flex;flex-direction:column;align-items:center;padding:clamp(24px,4vw,52px) 18px 40px}
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .bg .glow{position:absolute;border-radius:50%;filter:blur(70px);opacity:.5}
+  .bg .g1{width:60vw;height:60vw;left:-15vw;top:-10vw;background:radial-gradient(circle,rgba(255,42,109,.35),transparent 65%)}
+  .bg .g2{width:60vw;height:60vw;right:-15vw;top:-5vw;background:radial-gradient(circle,rgba(5,217,232,.32),transparent 65%)}
+  .bg .g3{width:50vw;height:50vw;left:25vw;bottom:-25vw;background:radial-gradient(circle,rgba(165,107,255,.28),transparent 65%)}
+  .grid{position:fixed;left:50%;bottom:-2vh;width:260vw;height:52vh;transform:translateX(-50%) perspective(46vh) rotateX(66deg);
+    background-image:linear-gradient(rgba(5,217,232,.28) 1px,transparent 1px),linear-gradient(90deg,rgba(255,42,109,.22) 1px,transparent 1px);
+    background-size:5vh 5vh;z-index:0;pointer-events:none;
+    mask-image:linear-gradient(to top,#000 10%,transparent 85%);-webkit-mask-image:linear-gradient(to top,#000 10%,transparent 85%);animation:flow 4s linear infinite}
+  @keyframes flow{to{background-position:0 5vh,0 0}}
+  .scan{position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.5;background:repeating-linear-gradient(to bottom,transparent 0 2px,rgba(0,0,0,.22) 2px 4px)}
+  .vig{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 120% at 50% 40%,transparent 55%,rgba(0,0,0,.7))}
+  .stage{position:relative;z-index:3;width:100%;max-width:1040px;display:flex;flex-direction:column;align-items:center}
+
+  .badge{font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:.42em;text-transform:uppercase;font-size:12px;color:var(--gold);
+    padding:6px 16px;border:1px solid rgba(255,211,0,.4);border-radius:999px;margin-bottom:18px;background:rgba(255,211,0,.05);box-shadow:0 0 18px rgba(255,211,0,.15)}
+  .title{position:relative;font-family:'Orbitron',sans-serif;font-weight:900;text-transform:uppercase;font-size:clamp(2.6rem,9vw,6rem);line-height:.92;letter-spacing:.04em;text-align:center}
+  .title .l1{background:linear-gradient(90deg,#fff,#ffe98a);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(255,211,0,.35))}
+  .title .l2{background:linear-gradient(90deg,var(--red),var(--violet) 50%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 22px rgba(165,107,255,.5))}
+  .title::after{content:"THE BAR GAMES";position:absolute;inset:0;color:transparent;-webkit-text-stroke:1px rgba(5,217,232,.25);transform:translate(2px,2px);z-index:-1}
+  .flicker{animation:flick 5s infinite}
+  @keyframes flick{0%,96%,100%{opacity:1}97%{opacity:.7}98%{opacity:1}98.5%{opacity:.6}}
+  .sub{font-family:'Rajdhani',sans-serif;font-weight:600;color:var(--muted);font-size:clamp(15px,2.2vw,19px);letter-spacing:.14em;text-transform:uppercase;margin-top:14px;text-align:center}
+
+  .modes{position:relative;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:stretch;width:min(760px,96vw);margin:34px 0 6px}
+  @media(max-width:560px){.modes{grid-template-columns:1fr;gap:12px}.vsbadge{display:none}}
+  .mode{position:relative;cursor:pointer;font-family:inherit;color:var(--ink);text-align:center;background:var(--panel);backdrop-filter:blur(10px);
+    border:1px solid var(--border);border-radius:20px;padding:24px 20px;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s}
+  .mode .ic{font-size:30px;display:block;margin-bottom:10px}
+  .mode h3{font-family:'Orbitron',sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.06em;text-transform:uppercase}
+  .mode small{display:block;color:var(--muted);font-size:.86rem;margin-top:7px;letter-spacing:.02em}
+  .mode::before{content:"";position:absolute;inset:0;opacity:0;transition:opacity .2s}
+  .mode.red::before{background:radial-gradient(circle at 50% 20%,rgba(255,42,109,.22),transparent 70%)}
+  .mode.blue::before{background:radial-gradient(circle at 50% 20%,rgba(5,217,232,.22),transparent 70%)}
+  .mode.red{border-color:rgba(255,42,109,.45)}.mode.blue{border-color:rgba(5,217,232,.45)}
+  .mode:hover{transform:translateY(-4px)}.mode:hover::before{opacity:1}
+  .mode.red:hover{box-shadow:0 16px 44px rgba(255,42,109,.3),0 0 0 1px var(--red) inset}
+  .mode.blue:hover{box-shadow:0 16px 44px rgba(5,217,232,.3),0 0 0 1px var(--blue) inset}
+  .mode.red.sel{box-shadow:0 0 0 1px var(--red) inset,0 12px 34px rgba(255,42,109,.25)}
+  .mode.blue.sel{box-shadow:0 0 0 1px var(--blue) inset,0 12px 34px rgba(5,217,232,.25)}
+  .vsbadge{align-self:center;font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.4rem;color:var(--gold);text-shadow:0 0 20px rgba(255,211,0,.6);padding:0 4px;animation:vspulse 1.6s ease-in-out infinite}
+  @keyframes vspulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+
+  .srule{display:flex;align-items:center;gap:16px;width:min(1000px,96vw);margin:40px 0 20px;font-family:'Orbitron',sans-serif;font-size:12px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  .srule::before,.srule::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(255,211,0,.5),transparent)}
+
+  .grid-games{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px;width:min(1000px,96vw)}
+  .card{position:relative;cursor:pointer;font-family:inherit;color:var(--ink);text-align:left;background:var(--panel);backdrop-filter:blur(10px);
+    border:1px solid var(--border);border-radius:16px;padding:18px 16px 16px;overflow:hidden;transition:transform .18s,box-shadow .18s,border-color .18s;--c:var(--blue)}
+  .card::before{content:"";position:absolute;left:0;top:0;height:100%;width:4px;background:var(--c);box-shadow:0 0 16px var(--c);opacity:.9}
+  .card::after{content:"";position:absolute;inset:0;opacity:0;transition:opacity .2s;background:radial-gradient(circle at 80% 0%,color-mix(in srgb,var(--c) 22%,transparent),transparent 70%)}
+  .card:hover{transform:translateY(-5px);border-color:var(--c);box-shadow:0 20px 46px rgba(0,0,0,.5),0 0 26px -6px var(--c)}
+  .card:hover::after{opacity:1}
+  .card .row{display:flex;align-items:center;justify-content:space-between}
+  .card .ico{font-size:26px}
+  .card .no{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--c);letter-spacing:.14em;opacity:.9}
+  .card h4{font-family:'Orbitron',sans-serif;font-weight:700;font-size:1rem;letter-spacing:.03em;margin:12px 0 6px;text-transform:uppercase}
+  .card p{color:var(--muted);font-size:.9rem;line-height:1.4;min-height:38px}
+  .card .tags{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;letter-spacing:.08em;color:var(--c);text-transform:uppercase}
+  .card .pill{position:absolute;top:12px;right:12px;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;padding:4px 9px;border-radius:999px;letter-spacing:.06em;color:#08060f;background:var(--c);box-shadow:0 0 14px -2px var(--c)}
+  .card .pill.soon{background:transparent;color:var(--muted);border:1px solid var(--border);box-shadow:none}
+  .card.tournament{grid-column:1/-1;--c:var(--gold);display:flex;align-items:center;gap:20px;padding:20px 22px}
+  .card.tournament .ico{font-size:34px}.card.tournament .body{flex:1}.card.tournament p{min-height:0}
+
+  .footer{margin-top:38px;font-family:'Rajdhani',sans-serif;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);font-size:12px;text-align:center}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);z-index:20;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.04em;
+    background:rgba(22,20,42,.92);border:1px solid var(--gold);color:var(--ink);padding:12px 20px;border-radius:12px;opacity:0;pointer-events:none;transition:.25s;box-shadow:0 14px 34px rgba(0,0,0,.6)}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+  <div class="bg"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div></div>
+  <div class="grid"></div><div class="scan"></div><div class="vig"></div>
+
+  <div class="stage">
+    <div class="badge">Called to the Bar · Player 1 vs Player 2</div>
+    <h1 class="title flicker"><span class="l1">THE BAR</span><br><span class="l2">GAMES</span></h1>
+
+    <div class="modes">
+      <button class="mode red sel" data-mode="same"><span class="ic">🕹️</span><h3>Same Screen</h3><small>Keyboard split play — no WiFi needed</small></button>
+      <div class="vsbadge">VS</div>
+      <button class="mode blue" data-mode="phone"><span class="ic">📲</span><h3>Use Phones</h3><small>Scan the QR code to join the duel</small></button>
+    </div>
+
+    <div class="srule">Select Your Case</div>
+    <div class="grid-games" id="games"></div>
+    <div class="footer">Insert Coin · A toast to the newest barrister in the room</div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const GAMES=[
+    {n:"01",ic:"⚖️",c:"var(--red)",title:"Guilty or Not Guilty",desc:"Real lawsuit, or total fake? Slam your verdict.",tags:"Best of 7 · Guessing",pill:"▶ Play now",file:"game1-guilty.html",ready:true},
+    {n:"02",ic:"🔨",c:"var(--blue)",title:"Objection!",desc:"Wait for the flash — fastest buzzer wins.",tags:"Best of 5 · Reflexes",pill:"▶ Play now",file:"game2-objection.html",ready:true},
+    {n:"03",ic:"📜",c:"var(--violet)",title:"Sustained",desc:"Same question, split screen. First correct scores.",tags:"10 Rounds · Trivia",pill:"▶ Play now",file:"game3-sustained.html",ready:true},
+    {n:"04",ic:"🎭",c:"var(--green)",title:"Order in the Court",desc:"Finish the ridiculous line. Funniest wins.",tags:"Best of 5 · Laughs",pill:"▶ Play now",file:"game4-order.html",ready:true},
+    {n:"05",ic:"⏱️",c:"var(--gold)",title:"Beat the Gavel",desc:"Stop the verdict meter in the green zone.",tags:"Best of 5 · Timing",pill:"▶ Play now",file:"game5-gavel.html",ready:true},
+  ];
+  let mode="same";
+  const toast=document.getElementById('toast');
+  function say(m){toast.textContent=m;toast.classList.add('show');clearTimeout(say._t);say._t=setTimeout(()=>toast.classList.remove('show'),2200);}
+  document.querySelectorAll('.mode').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('.mode').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');mode=b.dataset.mode;
+    say(mode==='phone'?'Phone mode armed — QR appears at game start':'Same-screen mode ready — grab the keyboard');
+  }));
+  const wrap=document.getElementById('games');
+  GAMES.forEach(g=>{
+    const el=document.createElement('button');el.className='card';el.style.setProperty('--c',g.c);
+    el.innerHTML=`${g.ready?`<span class="pill">${g.pill}</span>`:'<span class="pill soon">Soon</span>'}
+      <div class="row"><span class="ico">${g.ic}</span><span class="no">CASE ${g.n}</span></div>
+      <h4>${g.title}</h4><p>${g.desc}</p><div class="tags">${g.tags}</div>`;
+    el.addEventListener('click',()=>{ if(g.ready&&g.file){window.location.href=g.file;} else {say(`▶ ${g.title} — coming next in the build`);} });
+    wrap.appendChild(el);
+  });
+  const t=document.createElement('button');t.className='card tournament';
+  t.innerHTML=`<span class="ico">🏆</span><div class="body"><div class="no">FULL DOCKET</div><h4>Tournament — Play All Five</h4><p>One run through every game. Crown the Silk of the Night.</p></div>`;
+  t.addEventListener('click',()=>say('🏆 Tournament — coming once all five are ported'));
+  wrap.appendChild(t);
+</script>
+</body>
+</html>

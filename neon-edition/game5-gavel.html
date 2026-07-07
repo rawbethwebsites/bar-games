@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beat the Gavel — Neon Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#07060f;--ink:#eef0ff;--muted:#8a8fbf;--red:#ff2a6d;--blue:#05d9e8;--gold:#ffd300;--violet:#a56bff;--green:#39ff9e;--panel:rgba(22,20,42,.6);--border:rgba(255,255,255,.10)}
+  *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;overflow:hidden;position:relative;user-select:none;-webkit-user-select:none}
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .glow{position:absolute;border-radius:50%;filter:blur(70px);opacity:.42}
+  .g1{width:55vw;height:55vw;left:-15vw;top:-12vw;background:radial-gradient(circle,rgba(255,42,109,.3),transparent 65%)}
+  .g2{width:55vw;height:55vw;right:-15vw;top:-8vw;background:radial-gradient(circle,rgba(5,217,232,.3),transparent 65%)}
+  .vig{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 120% at 50% 40%,transparent 55%,rgba(0,0,0,.72))}
+  .screen{position:relative;z-index:3;height:100vh;display:none;flex-direction:column}.screen.active{display:flex}
+  .homebtn{position:fixed;top:13px;left:14px;z-index:40;text-decoration:none;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(22,20,42,.7);border:1px solid var(--border);border-radius:999px;padding:8px 15px;display:flex;align-items:center;gap:7px;transition:.15s;backdrop-filter:blur(6px)}
+  .homebtn:hover{border-color:var(--gold)}body.in-game .homebtn{display:none}
+  .homegame{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:45;display:none;text-decoration:none;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(22,20,42,.85);border:1px solid var(--border);border-radius:999px;padding:9px 20px;align-items:center;gap:8px;backdrop-filter:blur(6px);box-shadow:0 8px 22px rgba(0,0,0,.5);transition:.15s}
+  .homegame:hover{border-color:var(--gold);color:var(--gold);transform:translateX(-50%) translateY(-2px)}body.in-game .homegame{display:flex}
+  .scorebar{display:flex;align-items:stretch;height:72px;border-bottom:1px solid var(--border);flex:0 0 auto}
+  .side{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 22px}
+  .side.left{background:linear-gradient(90deg,rgba(255,42,109,.18),transparent)}.side.right{align-items:flex-end;text-align:right;background:linear-gradient(270deg,rgba(5,217,232,.18),transparent)}
+  .side .who{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .side.left .who{color:var(--red)}.side.right .who{color:var(--blue)}
+  .side .pts{font-family:'Orbitron',sans-serif;font-weight:900;font-size:32px;line-height:1}
+  .side.left .pts{color:var(--red);text-shadow:0 0 16px rgba(255,42,109,.5)}.side.right .pts{color:var(--blue);text-shadow:0 0 16px rgba(5,217,232,.5)}
+  .side .keys{font-size:10px;color:var(--muted);margin-top:2px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.05em}
+  .centre{flex:0 0 auto;width:176px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+  .centre .rnd{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}.centre .rnd b{color:var(--ink)}
+  .centre .ttl{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+  .play{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px 20px 64px}
+  .banner{font-family:'Rajdhani',sans-serif;font-weight:600;color:var(--gold);text-align:center;font-size:16px;letter-spacing:.03em}
+  .cols{display:flex;gap:1.5rem;width:min(1000px,96vw)}
+  .col{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px}
+  .col .tag{font-family:'Orbitron',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:12px}
+  .col.left .tag{color:var(--red)}.col.right .tag{color:var(--blue)}
+  .meter{position:relative;width:100%;max-width:420px;height:76px;border-radius:14px;overflow:hidden;border:1.5px solid var(--border);background:linear-gradient(180deg,rgba(0,0,0,.4),rgba(0,0,0,.2));cursor:pointer}
+  .mlabels{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 10px;pointer-events:none;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:.06em;color:var(--muted)}
+  .mlabels .mid{color:var(--green)}
+  .zone{position:absolute;top:0;bottom:0;transform:translateX(-50%);background:linear-gradient(180deg,rgba(57,255,158,.5),rgba(57,255,158,.28));border-left:1px solid var(--green);border-right:1px solid var(--green)}
+  .needle{position:absolute;top:-3px;bottom:-3px;width:4px;left:0;border-radius:2px;background:var(--gold);box-shadow:0 0 12px rgba(255,211,0,.9)}
+  .meter.hit{box-shadow:0 0 0 2px var(--green),0 0 24px rgba(57,255,158,.5) inset}
+  .meter.miss{box-shadow:0 0 0 2px var(--red),0 0 24px rgba(255,42,109,.4) inset}
+  .btn{font-family:'Orbitron',sans-serif;font-weight:700;letter-spacing:.05em;color:var(--ink);cursor:pointer;border:1.5px solid var(--border);border-radius:12px;padding:12px 26px;background:rgba(255,255,255,.04);transition:.12s;font-size:14px}
+  .btn:hover{border-color:var(--gold)}.btn b{color:var(--gold)}
+  .result{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:15px;min-height:22px}
+  .result.good{color:var(--green)}.result.bad{color:var(--red)}
+  .greens{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--gold)}
+  .pad{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;gap:8px}
+  .crest{font-size:50px;filter:drop-shadow(0 0 24px rgba(255,211,0,.4))}
+  .kick{font-family:'Rajdhani',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.4em;font-size:11px;color:var(--gold);margin-top:8px}
+  h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(34px,6.4vw,64px);line-height:1;text-transform:uppercase;margin:8px 0;background:linear-gradient(90deg,var(--red),var(--violet) 50%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(165,107,255,.4))}
+  .lede{font-family:'Inter',sans-serif;font-size:clamp(15px,2.2vw,19px);color:var(--muted);max-width:600px;line-height:1.5}
+  .rules{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:22px 0 6px;max-width:820px}
+  .rule{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;width:220px;backdrop-filter:blur(8px)}
+  .rule .rt{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gold);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase}
+  .rule .rd{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:14.5px;color:var(--muted);line-height:1.4}
+  .cta{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;color:#08060f;cursor:pointer;border:none;border-radius:999px;padding:15px 40px;margin-top:14px;background:linear-gradient(180deg,#ffe98a,var(--gold));box-shadow:0 12px 30px rgba(255,211,0,.3);transition:.15s;text-transform:uppercase}
+  .cta:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  .hint{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:12px;color:var(--muted);margin-top:14px}
+  .winner .trophy{font-size:60px;animation:pop .5s cubic-bezier(.2,.8,.3,1.4) both}
+  .finalscore{display:flex;align-items:center;gap:26px;margin:18px 0;font-family:'Orbitron',sans-serif}
+  .finalscore .fs{font-weight:900;font-size:50px}.finalscore .fs.l{color:var(--red)}.finalscore .fs.r{color:var(--blue)}.finalscore .vs{color:var(--muted);font-size:20px}
+  @keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+  @media(prefers-reduced-motion:reduce){.crest{animation:none}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="glow g1"></div><div class="glow g2"></div></div><div class="vig"></div>
+<a class="homebtn" href="index.html">⚖️ Home</a><a class="homegame" href="index.html">⚖️ Home</a>
+
+<section class="screen active" id="introScreen">
+  <div class="pad">
+    <div class="crest">⏱️</div><div class="kick">Case 05 of the Bar Games</div>
+    <h1>Beat the Gavel</h1>
+    <p class="lede">The verdict needle sweeps between GUILTY and NOT GUILTY. Stop it in the shrinking green zone. Each round the target narrows and the needle speeds up. Most clean stops after five rounds wins.</p>
+    <div class="rules">
+      <div class="rule"><div class="rt">🔴 Left Player</div><div class="rd">Stop with <b>A</b> or click your meter</div></div>
+      <div class="rule"><div class="rt">🔵 Right Player</div><div class="rd">Stop with <b>L</b> or click your meter</div></div>
+      <div class="rule"><div class="rt">⚖️ To Win</div><div class="rd">Land in the green. Most greens over <b>5</b> rounds.</div></div>
+    </div>
+    <button class="cta" onclick="startMatch()">▶ Take the Bench</button>
+    <div class="hint">5 rounds · The green zone shrinks each time</div>
+  </div>
+</section>
+
+<section class="screen" id="gameScreen">
+  <div class="scorebar">
+    <div class="side left"><div class="who">🔴 Prosecution</div><div class="pts" id="scoreL">0</div><div class="keys">Stop: A</div></div>
+    <div class="centre"><div class="rnd">Round <b id="roundNow">1</b> / <span id="roundTot">5</span></div><div class="ttl">Beat the Gavel</div></div>
+    <div class="side right"><div class="who">Defence 🔵</div><div class="pts" id="scoreR">0</div><div class="keys">Stop: L</div></div>
+  </div>
+  <div class="play">
+    <div class="banner" id="banner">Green zone: wide open. Stop the needle!</div>
+    <div class="cols">
+      <div class="col left">
+        <div class="tag">🔴 Prosecution</div>
+        <div class="meter" id="meterL"><div class="mlabels"><span>GUILTY</span><span class="mid">NOT GUILTY</span><span>GUILTY</span></div><div class="zone" id="zoneL"></div><div class="needle" id="needleL"></div></div>
+        <button class="btn" id="btnL">Press <b>A</b> to stop</button>
+        <div class="result" id="resL"></div><div class="greens" id="greensL">Greens: 0</div>
+      </div>
+      <div class="col right">
+        <div class="tag">🔵 Defence</div>
+        <div class="meter" id="meterR"><div class="mlabels"><span>GUILTY</span><span class="mid">NOT GUILTY</span><span>GUILTY</span></div><div class="zone" id="zoneR"></div><div class="needle" id="needleR"></div></div>
+        <button class="btn" id="btnR">Press <b>L</b> to stop</button>
+        <div class="result" id="resR"></div><div class="greens" id="greensR">Greens: 0</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="screen winner" id="winScreen">
+  <div class="pad">
+    <div class="trophy" id="trophy">🏆</div><div class="kick">The Gavel Falls</div>
+    <h1 id="winTitle">The Prosecution Wins</h1>
+    <div class="finalscore"><span class="fs l" id="fsL">0</span><span class="vs">—</span><span class="fs r" id="fsR">0</span></div>
+    <p class="lede" id="winFlavour">Impeccable timing on the bench.</p>
+    <button class="cta" onclick="startMatch()">↺ Rematch</button>
+    <div class="hint">Press <b>Enter</b> to play again · ⚖️ Home to exit</div>
+  </div>
+</section>
+
+<script>
+const MAXR=5;
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');document.body.classList.toggle('in-game',id==='gameScreen');}
+let round=0,greensL=0,greensR=0,zone=0.28,raf=null,last=0,sudden=false;
+let N={L:{pos:.5,dir:1,speed:.9,stopped:true,hit:false},R:{pos:.5,dir:-1,speed:.9,stopped:true,hit:false}};
+function startMatch(){round=0;greensL=0;greensR=0;$('scoreL').textContent=0;$('scoreR').textContent=0;$('roundTot').textContent=MAXR;$('greensL').textContent='Greens: 0';$('greensR').textContent='Greens: 0';show('gameScreen');sudden=false;nextRound();}
+function paintZone(){['L','R'].forEach(s=>{$('zone'+s).style.width=zone*100+'%';$('zone'+s).style.left='50%';});}
+function nextRound(){if(round>=MAXR)return endMatch();round++;$('roundNow').textContent=round;zone=Math.max(.10,.30-(round-1)*.045);const spd=.85+(round-1)*.16;paintZone();N.L={pos:Math.random()*.4+.05,dir:1,speed:spd,stopped:false,hit:false};N.R={pos:Math.random()*.4+.55,dir:-1,speed:spd,stopped:false,hit:false};$('meterL').className='meter';$('meterR').className='meter';$('resL').textContent='';$('resR').textContent='';$('resL').className='result';$('resR').className='result';$('btnL').style.opacity=1;$('btnR').style.opacity=1;const pct=Math.round(zone*100);$('banner').textContent=round===1?'Green zone: wide open. Stop the needle!':`Green zone narrows to ${pct}% — steady…`;last=performance.now();if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);}
+function loop(ts){const dt=Math.min(.05,(ts-last)/1000);last=ts;['L','R'].forEach(s=>{const n=N[s];if(!n.stopped){n.pos+=n.dir*n.speed*dt;if(n.pos>=1){n.pos=1;n.dir=-1;}if(n.pos<=0){n.pos=0;n.dir=1;}$('needle'+s).style.left=(n.pos*100)+'%';}});raf=requestAnimationFrame(loop);}
+function stopCore(side){const n=N[side];if(n.stopped)return;n.stopped=true;const inZone=Math.abs(n.pos-.5)<=zone/2;n.hit=inZone;$('meter'+side).classList.add(inZone?'hit':'miss');const res=$('res'+side);if(inZone){res.textContent='NOT GUILTY — clean stop!';res.className='result good';}else{res.textContent=n.pos<.5?'Too early — GUILTY':'Too late — GUILTY';res.className='result bad';}$('btn'+side).style.opacity=.4;if(!sudden){if(inZone){if(side==='L')greensL++;else greensR++;}$('greensL').textContent='Greens: '+greensL;$('greensR').textContent='Greens: '+greensR;$('scoreL').textContent=greensL;$('scoreR').textContent=greensR;if(N.L.stopped&&N.R.stopped){if(raf)cancelAnimationFrame(raf);setTimeout(nextRound,1400);}}else{$('scoreL').textContent=greensL;$('scoreR').textContent=greensR;if(N.L.stopped&&N.R.stopped)resolveSudden();}}
+function resolveSudden(){if(raf)cancelAnimationFrame(raf);if(N.L.hit&&!N.R.hit)greensL++;else if(N.R.hit&&!N.L.hit)greensR++;$('scoreL').textContent=greensL;$('scoreR').textContent=greensR;if(greensL!==greensR){sudden=false;setTimeout(finish,1300);}else setTimeout(suddenDeath,1300);}
+function suddenDeath(){sudden=true;zone=.08;paintZone();const spd=1.7;N.L={pos:Math.random()*.4+.05,dir:1,speed:spd,stopped:false,hit:false};N.R={pos:Math.random()*.4+.55,dir:-1,speed:spd,stopped:false,hit:false};$('meterL').className='meter';$('meterR').className='meter';$('resL').textContent='';$('resR').textContent='';$('resL').className='result';$('resR').className='result';$('roundNow').textContent='SD';$('banner').textContent='SUDDEN DEATH — tiny zone, land it to win!';last=performance.now();if(raf)cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);}
+function endMatch(){if(raf)cancelAnimationFrame(raf);if(greensL===greensR)return suddenDeath();finish();}
+function finish(){$('fsL').textContent=greensL;$('fsR').textContent=greensR;let t,f;if(greensL>greensR){t='🔴 The Prosecution Wins';f='Nerves of steel and a perfect eye. The gavel obeys.';}else{t='🔵 The Defence Wins';f='Cool, precise, and unshakeable. Beautifully timed.';}$('winTitle').textContent=t;$('winFlavour').textContent=f;show('winScreen');}
+document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if($('gameScreen').classList.contains('active')){if(k==='a'){e.preventDefault();stopCore('L');}else if(k==='l'){e.preventDefault();stopCore('R');}}if(k==='enter'&&($('winScreen').classList.contains('active')||$('introScreen').classList.contains('active')))startMatch();});
+$('meterL').addEventListener('pointerdown',()=>stopCore('L'));$('btnL').addEventListener('pointerdown',()=>stopCore('L'));
+$('meterR').addEventListener('pointerdown',()=>stopCore('R'));$('btnR').addEventListener('pointerdown',()=>stopCore('R'));
+</script>
+</body>
+</html>

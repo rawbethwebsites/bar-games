@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Order in the Court — Neon Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#07060f;--ink:#eef0ff;--muted:#8a8fbf;--red:#ff2a6d;--blue:#05d9e8;--gold:#ffd300;--violet:#a56bff;--green:#39ff9e;--panel:rgba(22,20,42,.6);--border:rgba(255,255,255,.10)}
+  *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;overflow:hidden;position:relative;user-select:none;-webkit-user-select:none}
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .glow{position:absolute;border-radius:50%;filter:blur(70px);opacity:.42}
+  .g1{width:55vw;height:55vw;left:-15vw;top:-12vw;background:radial-gradient(circle,rgba(57,255,158,.24),transparent 65%)}
+  .g2{width:55vw;height:55vw;right:-15vw;top:-8vw;background:radial-gradient(circle,rgba(165,107,255,.3),transparent 65%)}
+  .vig{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 120% at 50% 40%,transparent 55%,rgba(0,0,0,.72))}
+  .screen{position:relative;z-index:3;height:100vh;display:none;flex-direction:column}.screen.active{display:flex}
+  .homebtn{position:fixed;top:13px;left:14px;z-index:40;text-decoration:none;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(22,20,42,.7);border:1px solid var(--border);border-radius:999px;padding:8px 15px;display:flex;align-items:center;gap:7px;transition:.15s;backdrop-filter:blur(6px)}
+  .homebtn:hover{border-color:var(--gold)}body.in-game .homebtn{display:none}
+  .homegame{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);z-index:45;display:none;text-decoration:none;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink);background:rgba(22,20,42,.85);border:1px solid var(--border);border-radius:999px;padding:9px 20px;align-items:center;gap:8px;backdrop-filter:blur(6px);box-shadow:0 8px 22px rgba(0,0,0,.5);transition:.15s}
+  .homegame:hover{border-color:var(--gold);color:var(--gold);transform:translateX(-50%) translateY(-2px)}body.in-game .homegame{display:flex}
+  .scorebar{display:flex;align-items:stretch;height:72px;border-bottom:1px solid var(--border);flex:0 0 auto}
+  .side{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 22px}
+  .side.left{background:linear-gradient(90deg,rgba(255,42,109,.18),transparent)}.side.right{align-items:flex-end;text-align:right;background:linear-gradient(270deg,rgba(5,217,232,.18),transparent)}
+  .side .who{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .side.left .who{color:var(--red)}.side.right .who{color:var(--blue)}
+  .side .pts{font-family:'Orbitron',sans-serif;font-weight:900;font-size:32px;line-height:1}
+  .side.left .pts{color:var(--red);text-shadow:0 0 16px rgba(255,42,109,.5)}.side.right .pts{color:var(--blue);text-shadow:0 0 16px rgba(5,217,232,.5)}
+  .side .keys{font-size:10px;color:var(--muted);margin-top:2px;font-family:'Rajdhani',sans-serif;font-weight:600;letter-spacing:.05em}
+  .centre{flex:0 0 auto;width:170px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+  .centre .rnd{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}.centre .rnd b{color:var(--ink)}
+  .centre .ttl{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+  .qbar{flex:0 0 auto;padding:20px 20px 16px;text-align:center;border-bottom:1px solid var(--border);background:linear-gradient(180deg,rgba(22,20,42,.5),transparent)}
+  .qbar .lab{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase}
+  .qbar .q{font-family:'Inter',sans-serif;font-size:clamp(21px,3.2vw,32px);line-height:1.3;margin-top:8px;max-width:900px;margin-inline:auto}
+  .qbar .q .blank{color:var(--gold);border-bottom:2px dashed var(--gold);padding:0 26px}
+  .play{flex:1;display:flex;min-height:0}
+  .col{flex:1;display:flex;flex-direction:column;padding:18px 20px 64px;gap:10px}
+  .col.left{border-right:1px solid var(--border)}
+  .col .tag{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;text-align:center}
+  .col.left .tag{color:var(--red)}.col.right .tag{color:var(--blue)}
+  .cards{flex:1;display:flex;flex-direction:column;gap:10px;min-height:0}
+  .opt{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:13px;cursor:pointer;flex:1;border:1.5px solid var(--border);background:rgba(255,255,255,.03);color:var(--ink);text-align:left;font-family:inherit;transition:transform .1s,border-color .15s,background .15s}
+  .opt:hover{border-color:var(--gold)}
+  .opt .key{flex:0 0 auto;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;border:1px solid var(--border);color:var(--gold)}
+  .opt .txt{font-family:'Inter',sans-serif;font-size:clamp(15px,1.9vw,20px);line-height:1.2}
+  .col.left .opt.picked{background:rgba(255,42,109,.3);border-color:var(--red)}.col.right .opt.picked{background:rgba(5,217,232,.3);border-color:var(--blue)}
+  .col.locked .opt:not(.picked){opacity:.35}.col.locked .opt{cursor:default}
+  .status{text-align:center;font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;height:20px;color:var(--gold)}
+  .vote{position:fixed;inset:0;z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:radial-gradient(circle at 50% 40%,rgba(7,6,15,.9),rgba(4,3,9,.96));backdrop-filter:blur(3px);padding:30px}
+  .vote.show{display:flex}
+  .vote h2{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(22px,4vw,38px);color:var(--gold);text-align:center;text-transform:uppercase}
+  .picks{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;width:min(1000px,96vw)}
+  .pick{flex:1;min-width:280px;border-radius:16px;padding:24px 22px;cursor:pointer;text-align:center;transition:transform .15s,box-shadow .15s;background:var(--panel);border:2px solid var(--border);backdrop-filter:blur(8px)}
+  .pick.l{border-color:rgba(255,42,109,.6)}.pick.r{border-color:rgba(5,217,232,.6)}
+  .pick:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,.5)}
+  .pick .who{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+  .pick.l .who{color:var(--red)}.pick.r .who{color:var(--blue)}
+  .pick .sentence{font-family:'Inter',sans-serif;font-size:clamp(17px,2.4vw,23px);line-height:1.35}
+  .pick .sentence b{color:var(--gold)}
+  .vote .cue{font-family:'Rajdhani',sans-serif;font-weight:500;color:var(--muted);font-size:15px}
+  .pad{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;gap:8px}
+  .crest{font-size:50px;filter:drop-shadow(0 0 24px rgba(255,211,0,.4))}
+  .kick{font-family:'Rajdhani',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.4em;font-size:11px;color:var(--gold);margin-top:8px}
+  h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(30px,5.6vw,58px);line-height:1;text-transform:uppercase;margin:8px 0;background:linear-gradient(90deg,var(--red),var(--violet) 50%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(165,107,255,.4))}
+  .lede{font-family:'Inter',sans-serif;font-size:clamp(15px,2.2vw,19px);color:var(--muted);max-width:600px;line-height:1.5}
+  .rules{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:22px 0 6px;max-width:820px}
+  .rule{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;width:220px;backdrop-filter:blur(8px)}
+  .rule .rt{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gold);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase}
+  .rule .rd{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:14.5px;color:var(--muted);line-height:1.4}
+  .cta{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;color:#08060f;cursor:pointer;border:none;border-radius:999px;padding:15px 40px;margin-top:14px;background:linear-gradient(180deg,#ffe98a,var(--gold));box-shadow:0 12px 30px rgba(255,211,0,.3);transition:.15s;text-transform:uppercase}
+  .cta:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  .hint{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:12px;color:var(--muted);margin-top:14px}
+  .winner .trophy{font-size:60px;animation:pop .5s cubic-bezier(.2,.8,.3,1.4) both}
+  .finalscore{display:flex;align-items:center;gap:26px;margin:18px 0;font-family:'Orbitron',sans-serif}
+  .finalscore .fs{font-weight:900;font-size:50px}.finalscore .fs.l{color:var(--red)}.finalscore .fs.r{color:var(--blue)}.finalscore .vs{color:var(--muted);font-size:20px}
+  @keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="glow g1"></div><div class="glow g2"></div></div><div class="vig"></div>
+<a class="homebtn" href="index.html">⚖️ Home</a><a class="homegame" href="index.html">⚖️ Home</a>
+
+<section class="screen active" id="introScreen">
+  <div class="pad">
+    <div class="crest">🎭</div><div class="kick">Case 04 of the Bar Games</div>
+    <h1>Order in the Court</h1>
+    <p class="lede">A ridiculous courtroom sentence needs finishing. Each player is dealt four options — pick the funniest. Then the room decides whose answer wins the point. Pure mischief, no law required.</p>
+    <div class="rules">
+      <div class="rule"><div class="rt">🔴 Left Player</div><div class="rd">Choose with <b>Q W A S</b> or click your cards</div></div>
+      <div class="rule"><div class="rt">🔵 Right Player</div><div class="rd">Choose with <b>U I J K</b> or click your cards</div></div>
+      <div class="rule"><div class="rt">🗳️ The Vote</div><div class="rd">The room taps the funnier answer. First to <b>3</b> wins.</div></div>
+    </div>
+    <button class="cta" onclick="startMatch()">▶ Call the Court to Order</button>
+    <div class="hint">Best of 5 · Vote with ← / → or by clicking</div>
+  </div>
+</section>
+
+<section class="screen" id="gameScreen">
+  <div class="scorebar">
+    <div class="side left"><div class="who">🔴 Prosecution</div><div class="pts" id="scoreL">0</div><div class="keys">Pick: Q W A S</div></div>
+    <div class="centre"><div class="rnd">Round <b id="roundNow">1</b> / 5</div><div class="ttl">First to 3</div></div>
+    <div class="side right"><div class="who">Defence 🔵</div><div class="pts" id="scoreR">0</div><div class="keys">Pick: U I J K</div></div>
+  </div>
+  <div class="qbar"><div class="lab">Finish the Sentence</div><div class="q" id="qText">…</div></div>
+  <div class="play">
+    <div class="col left" id="colL"><div class="tag">🔴 Prosecution — pick your line</div><div class="cards" id="cardsL"></div><div class="status" id="statL"></div></div>
+    <div class="col right" id="colR"><div class="tag">🔵 Defence — pick your line</div><div class="cards" id="cardsR"></div><div class="status" id="statR"></div></div>
+  </div>
+</section>
+
+<div class="vote" id="voteOverlay">
+  <h2>Order in the court — which is funnier?</h2>
+  <div class="picks">
+    <div class="pick l" id="pickL"><div class="who">🔴 Prosecution</div><div class="sentence" id="sentL"></div></div>
+    <div class="pick r" id="pickR"><div class="who">🔵 Defence</div><div class="sentence" id="sentR"></div></div>
+  </div>
+  <div class="cue">The room decides. Tap the winner — or press ← / →</div>
+</div>
+
+<section class="screen winner" id="winScreen">
+  <div class="pad">
+    <div class="trophy" id="trophy">🏆</div><div class="kick">The Court Has Spoken</div>
+    <h1 id="winTitle">The Prosecution Wins</h1>
+    <div class="finalscore"><span class="fs l" id="fsL">0</span><span class="vs">—</span><span class="fs r" id="fsR">0</span></div>
+    <p class="lede" id="winFlavour">The wittiest advocate carries the day.</p>
+    <button class="cta" onclick="startMatch()">↺ Rematch</button>
+    <div class="hint">Press <b>Enter</b> to play again · ⚖️ Home to exit</div>
+  </div>
+</section>
+
+<script>
+const PROMPTS=[
+  {prompt:"The defendant's alibi was ___.",options:["asleep in a bouncy castle","at a very important nap","too handsome to commit crimes","allegedly a ghost","being chased by a goose","at brunch, obviously","practising the recorder","emotionally unavailable"]},
+  {prompt:"The judge banged the gavel and shouted ___.",options:["“Order! …of fries, please”","“This court finds you fabulous”","“Recess — go play outside”","“Overruled and underwhelmed”","“I object to that outfit”","“Silence, I'm buffering”","“Case closed, I'm hungry”","“Bailiff, fetch snacks”"]},
+  {prompt:"The key piece of evidence was ___.",options:["a suspiciously smug cat","one (1) crumb","a very telling group chat","vibes, mostly","a half-eaten sandwich","an incriminating playlist","a single glittery shoe","the wifi password"]},
+  {prompt:"The witness swore to tell the truth, then ___.",options:["immediately winked","asked for a snack","began to freestyle","fainted dramatically","blamed their horoscope","started a podcast","denied knowing gravity","produced a puppet"]},
+  {prompt:"The defendant was found guilty of ___.",options:["excessive parking","aggressive optimism","crimes against fashion","stealing the show","being too loud at brunch","impersonating a barista","unlicensed dad jokes","littering with confetti"]},
+  {prompt:"The lawyer's closing argument was simply ___.",options:["“trust me, honestly”","a dramatic mic drop","an interpretive dance","“no further questions, vibes”","one very bold slide","“my client is baby”","a strongly worded meme","45 minutes of silence"]},
+  {prompt:"The jury deliberated for hours over ___.",options:["where to order lunch","the defendant's haircut","who took the pen","the meaning of 'reasonable'","the best selfie angle","the thermostat setting","whether ghosts can testify","the courtroom playlist"]},
+  {prompt:"The suspect's getaway vehicle was ___.",options:["a rented swan pedalo","a shopping trolley","a very slow scooter","an emotional-support horse","the number 47 bus","a pizza delivery bike","rollerblades, tragically","a bouncy castle (again)"]},
+  {prompt:"The courtroom gasped when ___.",options:["the twin walked in","the cat objected","the judge stood to dance","someone yelled 'plot twist'","the lights flickered ominously","the stenographer rapped","a goose entered","the wifi came back"]},
+  {prompt:"Exhibit A was ___.",options:["a deeply cursed selfie","one suspicious receipt","a napkin with plans on it","a passive-aggressive note","a friendship bracelet","a half-finished diary","an incriminating fridge magnet","a mixtape titled 'oops'"]},
+];
+const WIN_AT=3,MAXR=5,LKEYS={q:0,w:1,a:2,s:3},RKEYS={u:0,i:1,j:2,k:3},LLAB=['Q','W','A','S'],RLAB=['U','I','J','K'];
+const $=id=>document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');document.body.classList.toggle('in-game',id==='gameScreen');}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+let deck=[],round=0,scoreL=0,scoreR=0,cur=null,dealtL=[],dealtR=[],chosen={L:null,R:null},phase='pick';
+function startMatch(){deck=shuffle(PROMPTS).slice(0,MAXR);round=0;scoreL=0;scoreR=0;$('scoreL').textContent=0;$('scoreR').textContent=0;$('voteOverlay').classList.remove('show');show('gameScreen');nextRound();}
+function sentence(p){return cur.prompt.includes('___')?cur.prompt.replace('___','<b>'+p+'</b>'):cur.prompt+' <b>'+p+'</b>';}
+function promptHTML(){return cur.prompt.includes('___')?cur.prompt.replace('___','<span class="blank">?</span>'):cur.prompt;}
+function buildCards(el,dealt,labels,side){el.innerHTML=dealt.map((opt,idx)=>`<button class="opt" data-side="${side}" data-idx="${idx}"><span class="key">${labels[idx]}</span><span class="txt">${opt}</span></button>`).join('');el.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',()=>pick(b.dataset.side,parseInt(b.dataset.idx,10))));}
+function nextRound(){if(round>=MAXR||round>=deck.length)return endMatch();cur=deck[round];round++;phase='pick';chosen={L:null,R:null};const pool=shuffle(cur.options);dealtL=pool.slice(0,4);dealtR=pool.slice(4,8);$('roundNow').textContent=round;$('qText').innerHTML=promptHTML();$('colL').classList.remove('locked');$('colR').classList.remove('locked');$('statL').textContent='';$('statR').textContent='';buildCards($('cardsL'),dealtL,LLAB,'L');buildCards($('cardsR'),dealtR,RLAB,'R');}
+function pick(side,idx){if(phase!=='pick'||chosen[side]!==null)return;const dealt=side==='L'?dealtL:dealtR;chosen[side]=dealt[idx];const grid=side==='L'?$('cardsL'):$('cardsR');grid.querySelector(`[data-idx="${idx}"]`).classList.add('picked');$(side==='L'?'colL':'colR').classList.add('locked');$(side==='L'?'statL':'statR').textContent='Locked in — no peeking!';if(chosen.L!==null&&chosen.R!==null)setTimeout(openVote,450);}
+function openVote(){phase='vote';$('sentL').innerHTML=sentence(chosen.L);$('sentR').innerHTML=sentence(chosen.R);$('voteOverlay').classList.add('show');}
+function castVote(side){if(phase!=='vote')return;phase='done';if(side==='L'){scoreL++;$('scoreL').textContent=scoreL;}else{scoreR++;$('scoreR').textContent=scoreR;}const w=$(side==='L'?'pickL':'pickR');w.style.boxShadow='0 0 0 3px var(--gold),0 20px 40px rgba(0,0,0,.5)';setTimeout(()=>{w.style.boxShadow='';$('voteOverlay').classList.remove('show');if(scoreL>=WIN_AT||scoreR>=WIN_AT)endMatch();else nextRound();},1100);}
+function endMatch(){$('fsL').textContent=scoreL;$('fsR').textContent=scoreR;let t,f;if(scoreL>scoreR){t='🔴 The Prosecution Wins';f='Wit sharper than any cross-examination.';}else if(scoreR>scoreL){t='🔵 The Defence Wins';f='The funniest advocate in the building.';}else{t='A Tie of Titans!';f='Both benches are far too funny for their own good.';}$('winTitle').textContent=t;$('winFlavour').textContent=f;show('winScreen');}
+document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if($('gameScreen').classList.contains('active')){if(phase==='pick'){if(k in LKEYS)pick('L',LKEYS[k]);else if(k in RKEYS)pick('R',RKEYS[k]);}else if(phase==='vote'){if(e.key==='ArrowLeft')castVote('L');else if(e.key==='ArrowRight')castVote('R');}}if(k==='enter'&&($('winScreen').classList.contains('active')||$('introScreen').classList.contains('active')))startMatch();});
+$('pickL').addEventListener('click',()=>castVote('L'));$('pickR').addEventListener('click',()=>castVote('R'));
+</script>
+</body>
+</html>

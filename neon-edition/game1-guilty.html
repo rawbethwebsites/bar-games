@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guilty or Not Guilty — Neon Edition</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07060f;--ink:#eef0ff;--muted:#8a8fbf;
+    --red:#ff2a6d;--blue:#05d9e8;--gold:#ffd300;--violet:#a56bff;--green:#39ff9e;
+    --panel:rgba(22,20,42,.6);--border:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;overflow:hidden;position:relative;user-select:none;-webkit-user-select:none}
+  .bg{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+  .bg .glow{position:absolute;border-radius:50%;filter:blur(70px);opacity:.45}
+  .bg .g1{width:55vw;height:55vw;left:-15vw;top:-12vw;background:radial-gradient(circle,rgba(255,42,109,.32),transparent 65%)}
+  .bg .g2{width:55vw;height:55vw;right:-15vw;top:-8vw;background:radial-gradient(circle,rgba(5,217,232,.3),transparent 65%)}
+  .grid{position:fixed;left:50%;bottom:-2vh;width:260vw;height:46vh;transform:translateX(-50%) perspective(46vh) rotateX(66deg);
+    background-image:linear-gradient(rgba(5,217,232,.22) 1px,transparent 1px),linear-gradient(90deg,rgba(255,42,109,.18) 1px,transparent 1px);
+    background-size:5vh 5vh;z-index:0;pointer-events:none;mask-image:linear-gradient(to top,#000 8%,transparent 82%);-webkit-mask-image:linear-gradient(to top,#000 8%,transparent 82%);animation:flow 4.5s linear infinite}
+  @keyframes flow{to{background-position:0 5vh,0 0}}
+  .vig{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(120% 120% at 50% 40%,transparent 55%,rgba(0,0,0,.72))}
+
+  .screen{position:relative;z-index:3;height:100vh;display:none;flex-direction:column}
+  .screen.active{display:flex}
+
+  .homebtn{position:fixed;top:13px;left:14px;z-index:40;text-decoration:none;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink);
+    background:rgba(22,20,42,.7);border:1px solid var(--border);border-radius:999px;padding:8px 15px;display:flex;align-items:center;gap:7px;transition:.15s;backdrop-filter:blur(6px)}
+  .homebtn:hover{border-color:var(--gold);transform:translateY(-1px)}
+  body.in-game .homebtn{display:none}
+  .homegame{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:45;display:none;text-decoration:none;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.08em;color:var(--ink);
+    background:rgba(22,20,42,.85);border:1px solid var(--border);border-radius:999px;padding:9px 20px;align-items:center;gap:8px;backdrop-filter:blur(6px);box-shadow:0 8px 22px rgba(0,0,0,.5);transition:.15s}
+  .homegame:hover{border-color:var(--gold);color:var(--gold);transform:translateX(-50%) translateY(-2px)}
+  body.in-game .homegame{display:flex}
+
+  /* score bar */
+  .scorebar{display:flex;align-items:stretch;height:72px;border-bottom:1px solid var(--border);flex:0 0 auto}
+  .side{flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 22px}
+  .side.left{background:linear-gradient(90deg,rgba(255,42,109,.18),transparent)}
+  .side.right{align-items:flex-end;text-align:right;background:linear-gradient(270deg,rgba(5,217,232,.18),transparent)}
+  .side .who{font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .side.left .who{color:var(--red)}.side.right .who{color:var(--blue)}
+  .side .pts{font-family:'Orbitron',sans-serif;font-weight:900;font-size:32px;line-height:1}
+  .side.left .pts{color:var(--red);text-shadow:0 0 16px rgba(255,42,109,.5)}
+  .side.right .pts{color:var(--blue);text-shadow:0 0 16px rgba(5,217,232,.5)}
+  .side .keys{font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:2px;font-family:'Rajdhani',sans-serif;font-weight:600}
+  .centre{flex:0 0 auto;width:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border-left:1px solid var(--border);border-right:1px solid var(--border)}
+  .centre .rnd{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}
+  .centre .rnd b{color:var(--ink)}
+  .centre .ttl{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+
+  .play{flex:1;display:flex;align-items:stretch}
+  .zone{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;transition:background .15s}
+  .zone.left.flash{background:radial-gradient(circle at 50% 50%,rgba(255,42,109,.22),transparent 70%)}
+  .zone.right.flash{background:radial-gradient(circle at 50% 50%,rgba(5,217,232,.22),transparent 70%)}
+  .verdictbtns{display:flex;flex-direction:column;gap:14px;width:min(230px,34vw)}
+  .vbtn{font-family:'Orbitron',sans-serif;font-weight:700;font-size:clamp(14px,1.8vw,17px);letter-spacing:.04em;padding:18px 14px;border-radius:14px;cursor:default;color:var(--ink);
+    border:1.5px solid var(--border);background:rgba(255,255,255,.03);display:flex;flex-direction:column;align-items:center;gap:6px;transition:transform .1s,border-color .15s,background .15s}
+  .vbtn .k{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:11px;letter-spacing:.1em;color:var(--muted);border:1px solid var(--border);border-radius:6px;padding:2px 8px}
+  .vbtn.real{border-color:rgba(57,255,158,.4)}.vbtn.fake{border-color:rgba(255,42,109,.4)}
+  .vbtn .em{font-size:20px}
+  .zone.left .vbtn.picked{background:rgba(255,42,109,.28);border-color:var(--red);transform:scale(.96)}
+  .zone.right .vbtn.picked{background:rgba(5,217,232,.28);border-color:var(--blue);transform:scale(.96)}
+  .lockmsg{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:14px;color:var(--gold);height:20px;letter-spacing:.04em}
+
+  .cardwrap{flex:0 0 auto;width:min(460px,40vw);display:flex;align-items:center;justify-content:center;padding:10px}
+  .card{position:relative;background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:18px;padding:28px 24px;text-align:center;box-shadow:0 24px 50px rgba(0,0,0,.55);width:100%}
+  .card .label{font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:14px}
+  .card .text{font-family:'Inter',sans-serif;font-size:clamp(17px,2.3vw,22px);line-height:1.4;color:var(--ink)}
+  .timerbar{height:6px;width:100%;background:rgba(0,0,0,.4);border-radius:99px;margin-top:18px;overflow:hidden}
+  .timerbar>i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--green),var(--gold),var(--red));transition:width .1s linear}
+  .stamp{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-12deg) scale(1.6);font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(30px,5.5vw,56px);letter-spacing:.04em;
+    padding:8px 22px;border:5px solid currentColor;border-radius:14px;opacity:0;pointer-events:none;text-transform:uppercase;transition:opacity .18s,transform .18s;z-index:5;white-space:nowrap;background:rgba(7,6,15,.9)}
+  .stamp.show{opacity:1;transform:translate(-50%,-50%) rotate(-12deg) scale(1)}
+  .stamp.real{color:var(--green);text-shadow:0 0 24px rgba(57,255,158,.6)}
+  .stamp.fake{color:var(--red);text-shadow:0 0 24px rgba(255,42,109,.6)}
+  .outcome{margin-top:16px;font-family:'Rajdhani',sans-serif;font-weight:500;font-size:clamp(14px,1.9vw,17px);color:var(--muted);min-height:22px;opacity:0;transition:opacity .3s;line-height:1.45}
+  .outcome.show{opacity:1}
+
+  /* intro & winner */
+  .pad{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;gap:8px}
+  .crest{font-size:50px;filter:drop-shadow(0 0 24px rgba(255,211,0,.4))}
+  .kick{font-family:'Rajdhani',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:.4em;font-size:11px;color:var(--gold);margin-top:8px}
+  h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:clamp(34px,6.4vw,64px);line-height:1;text-transform:uppercase;margin:8px 0;
+    background:linear-gradient(90deg,var(--red),var(--violet) 50%,var(--blue));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 20px rgba(165,107,255,.4))}
+  .lede{font-family:'Inter',sans-serif;font-size:clamp(15px,2.2vw,19px);color:var(--muted);max-width:560px;line-height:1.5}
+  .rules{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;margin:22px 0 6px;max-width:720px}
+  .rule{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:16px 18px;width:210px;backdrop-filter:blur(8px)}
+  .rule .rt{font-family:'Orbitron',sans-serif;font-size:11px;color:var(--gold);letter-spacing:.08em;margin-bottom:6px;text-transform:uppercase}
+  .rule .rd{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:14.5px;color:var(--muted);line-height:1.4}
+  .cta{font-family:'Orbitron',sans-serif;font-weight:700;font-size:15px;letter-spacing:.06em;color:#08060f;cursor:pointer;border:none;border-radius:999px;padding:15px 40px;margin-top:14px;
+    background:linear-gradient(180deg,#ffe98a,var(--gold));box-shadow:0 12px 30px rgba(255,211,0,.3);transition:.15s;text-transform:uppercase}
+  .cta:hover{transform:translateY(-2px);filter:brightness(1.05)}
+  .hint{font-family:'Rajdhani',sans-serif;font-weight:500;font-size:12px;color:var(--muted);margin-top:14px;letter-spacing:.03em}
+  .winner .trophy{font-size:60px;animation:pop .5s cubic-bezier(.2,.8,.3,1.4) both}
+  .finalscore{display:flex;align-items:center;gap:26px;margin:18px 0;font-family:'Orbitron',sans-serif}
+  .finalscore .fs{font-weight:900;font-size:50px}.finalscore .fs.l{color:var(--red)}.finalscore .fs.r{color:var(--blue)}.finalscore .vs{color:var(--muted);font-size:20px}
+
+  @keyframes pop{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}60%{transform:translateX(8px)}}
+  .shake{animation:shake .35s}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="bg"><div class="glow g1"></div><div class="glow g2"></div></div>
+<div class="grid"></div><div class="vig"></div>
+
+<a class="homebtn" href="index.html">⚖️ Home</a>
+<a class="homegame" href="index.html">⚖️ Home</a>
+
+<!-- INTRO -->
+<section class="screen active" id="introScreen">
+  <div class="pad">
+    <div class="crest">⚖️</div>
+    <div class="kick">Case 01 of the Bar Games</div>
+    <h1>Guilty or Not Guilty</h1>
+    <p class="lede">A real lawsuit — or one we invented? Read the case, then slam your verdict. Fastest correct answer wins the most. No law degree required.</p>
+    <div class="rules">
+      <div class="rule"><div class="rt">🔴 Left Player</div><div class="rd"><b>A</b> = Real Case · <b>S</b> = Made Up</div></div>
+      <div class="rule"><div class="rt">🔵 Right Player</div><div class="rd"><b>K</b> = Real Case · <b>L</b> = Made Up</div></div>
+      <div class="rule"><div class="rt">⚖️ Scoring</div><div class="rd">Correct & fastest = 3 · Correct = 2 · Wrong = 0</div></div>
+    </div>
+    <button class="cta" onclick="startMatch()">▶ Call the First Case</button>
+    <div class="hint">Best of 7 · You can also click the buttons / tap on touchscreens</div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section class="screen" id="gameScreen">
+  <div class="scorebar">
+    <div class="side left"><div class="who">🔴 Prosecution</div><div class="pts" id="scoreL">0</div><div class="keys">A = Real · S = Made Up</div></div>
+    <div class="centre"><div class="rnd">Case <b id="roundNow">1</b> / <span id="roundTot">7</span></div><div class="ttl">Guilty or Not</div></div>
+    <div class="side right"><div class="who">Defence 🔵</div><div class="pts" id="scoreR">0</div><div class="keys">K = Real · L = Made Up</div></div>
+  </div>
+
+  <div class="play">
+    <div class="zone left" id="zoneL">
+      <div class="verdictbtns">
+        <div class="vbtn real" id="L_real"><span class="em">📜</span>REAL CASE<span class="k">A</span></div>
+        <div class="vbtn fake" id="L_fake"><span class="em">🤥</span>MADE UP<span class="k">S</span></div>
+      </div>
+      <div class="lockmsg" id="lockL"></div>
+    </div>
+
+    <div class="cardwrap">
+      <div class="card">
+        <div class="label">Exhibit — Read the Case</div>
+        <div class="text" id="caseText">…</div>
+        <div class="timerbar"><i id="timerFill"></i></div>
+        <div class="outcome" id="outcome"></div>
+        <div class="stamp" id="stamp"></div>
+      </div>
+    </div>
+
+    <div class="zone right" id="zoneR">
+      <div class="verdictbtns">
+        <div class="vbtn real" id="R_real"><span class="em">📜</span>REAL CASE<span class="k">K</span></div>
+        <div class="vbtn fake" id="R_fake"><span class="em">🤥</span>MADE UP<span class="k">L</span></div>
+      </div>
+      <div class="lockmsg" id="lockR"></div>
+    </div>
+  </div>
+</section>
+
+<!-- WINNER -->
+<section class="screen winner" id="winScreen">
+  <div class="pad">
+    <div class="trophy" id="trophy">🏆</div>
+    <div class="kick">The Verdict Is In</div>
+    <h1 id="winTitle">The Prosecution Wins</h1>
+    <div class="finalscore"><span class="fs l" id="fsL">0</span><span class="vs">—</span><span class="fs r" id="fsR">0</span></div>
+    <p class="lede" id="winFlavour">A worthy performance from the bench.</p>
+    <button class="cta" onclick="startMatch()">↺ Rematch</button>
+    <div class="hint">Press <b>Enter</b> to play again · ⚖️ Home to exit</div>
+  </div>
+</section>
+
+<script>
+/* ===== Case bank (verify "real" cases before the dinner) ===== */
+const CASES = [
+  {text:"A woman won a large payout after spilling a cup of the restaurant's coffee on herself, arguing it was dangerously hot.", isReal:true,  outcome:"REAL — Liebeck v. McDonald's, 1994. The coffee was near-boiling; she won."},
+  {text:"A judge sued a dry cleaner for around $54 million over a single pair of misplaced trousers.", isReal:true,  outcome:"REAL — Pearson v. Chung, 2005. He lost. The trousers were found."},
+  {text:"A man sued a beer company because its adverts promised him beautiful women and a fun social life that never materialised.", isReal:true,  outcome:"REAL — Overton v. Anheuser-Busch, 1991. Dismissed."},
+  {text:"A man sued a basketball legend and a shoe founder for $832 million because people kept mistaking him for the star.", isReal:true,  outcome:"REAL — Heckard v. Jordan & Knight, 2006. Withdrawn."},
+  {text:"A prison inmate sued himself for $5 million, claiming he had violated his own religious beliefs by getting drunk.", isReal:true,  outcome:"REAL — Robert Lee Brock, 1995. Thrown out (he had no income to pay himself)."},
+  {text:"A man took a soft-drink company to court demanding the fighter jet its advert jokingly offered for points.", isReal:true,  outcome:"REAL — Leonard v. PepsiCo, 1999. He lost; no reasonable person expected a real jet."},
+  {text:"A couple sued a house's seller for not disclosing it was, as a matter of public record, legally haunted.", isReal:true,  outcome:"REAL — Stambovsky v. Ackley, 1991. The court agreed the house was 'haunted as a matter of law.'"},
+  {text:"A man sued a weather app for $1 million because it forecast sunshine on the day he got rained on.", isReal:false, outcome:"MADE UP — but honestly, relatable."},
+  {text:"A woman sued a cinema because a nap during the film meant she 'missed the plot she paid for.'", isReal:false, outcome:"MADE UP — no such case (yet)."},
+  {text:"A man sued his neighbour for building a snowman that 'stared into his living room menacingly.'", isReal:false, outcome:"MADE UP — the snowman remains at large."},
+  {text:"A diner sued a bakery arguing that a 'bottomless' basket of bread had, in fact, a bottom.", isReal:false, outcome:"MADE UP — a crusty argument, but fictional."},
+  {text:"A commuter sued a train company for 'emotional damage' after a delay made him miss a first date.", isReal:false, outcome:"MADE UP — though the heartbreak is universal."},
+  {text:"A man sued a satellite-TV provider claiming their psychic hotline should have foreseen he wouldn't pay.", isReal:false, outcome:"MADE UP — the irony writes itself."},
+  {text:"A woman sued a car-maker after using cruise control and walking to the back of her motorhome, expecting it to drive itself.", isReal:false, outcome:"MADE UP — a famous urban legend, but never a real verdict."},
+];
+
+const ROUNDS = 7;
+let deck=[], round=0, scoreL=0, scoreR=0;
+let current=null, locked={L:null,R:null}, firstCorrect=null, timer=null, timeLeft=0, resolving=false;
+
+const $ = id => document.getElementById(id);
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));$(id).classList.add('active');document.body.classList.toggle('in-game', id==='gameScreen');}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function startMatch(){
+  deck = shuffle(CASES).slice(0, ROUNDS);
+  round=0; scoreL=0; scoreR=0;
+  $('scoreL').textContent=0; $('scoreR').textContent=0; $('roundTot').textContent=ROUNDS;
+  show('gameScreen');
+  nextCase();
+}
+
+function nextCase(){
+  if(round>=ROUNDS || round>=deck.length){return endMatch();}
+  current = deck[round]; round++;
+  locked={L:null,R:null}; firstCorrect=null; resolving=false;
+  $('roundNow').textContent=round;
+  $('caseText').textContent = current.text;
+  ['L_real','L_fake','R_real','R_fake'].forEach(id=>$(id).classList.remove('picked'));
+  $('lockL').textContent=''; $('lockR').textContent='';
+  $('zoneL').classList.remove('flash'); $('zoneR').classList.remove('flash');
+  const st=$('stamp'); st.className='stamp'; st.textContent='';
+  $('outcome').className='outcome'; $('outcome').textContent='';
+  timeLeft=100; $('timerFill').style.width='100%';
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    timeLeft-=100/(12000/100);
+    if(timeLeft<=0){timeLeft=0;$('timerFill').style.width='0%';clearInterval(timer);resolve();}
+    else $('timerFill').style.width=timeLeft+'%';
+  },100);
+}
+
+function pick(side, guess){
+  if(resolving || locked[side]!==null) return;
+  const correct = (guess===current.isReal);
+  locked[side]={guess,correct,t:performance.now()};
+  if(correct && firstCorrect===null) firstCorrect=side;
+  const kind=guess?'real':'fake';
+  $(`${side}_${kind}`).classList.add('picked');
+  $(side==='L'?'zoneL':'zoneR').classList.add('flash');
+  $(side==='L'?'lockL':'lockR').textContent='Verdict locked in…';
+  if(locked.L!==null && locked.R!==null) resolve();
+}
+
+function resolve(){
+  if(resolving) return; resolving=true; clearInterval(timer); $('timerFill').style.width='0%';
+  let addL=0, addR=0;
+  ['L','R'].forEach(s=>{
+    const v=locked[s];
+    if(v&&v.correct){ let pts=(firstCorrect===s)?3:2; if(s==='L')addL=pts; else addR=pts; }
+  });
+  scoreL+=addL; scoreR+=addR;
+  $('scoreL').textContent=scoreL; $('scoreR').textContent=scoreR;
+  const st=$('stamp');
+  st.textContent = current.isReal?'REAL':'MADE UP';
+  st.className='stamp show '+(current.isReal?'real':'fake');
+  const oc=$('outcome'); oc.textContent=current.outcome; oc.classList.add('show');
+  document.querySelector('.card').classList.add('shake');
+  setTimeout(()=>document.querySelector('.card').classList.remove('shake'),400);
+  setTimeout(nextCase, 3200);
+}
+
+function endMatch(){
+  $('fsL').textContent=scoreL; $('fsR').textContent=scoreR;
+  let title, flav, tro='🏆';
+  if(scoreL>scoreR){title='🔴 The Prosecution Wins';flav='Justice, swiftly served. The bench bows to the sharper mind.';}
+  else if(scoreR>scoreL){title='🔵 The Defence Wins';flav='Case dismissed for the opposition — a commanding victory.';}
+  else{title='A Hung Jury!';flav='Dead level. History will demand a rematch.';tro='⚖️';}
+  $('winTitle').textContent=title; $('winFlavour').textContent=flav; $('trophy').textContent=tro;
+  show('winScreen');
+}
+
+document.addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if($('gameScreen').classList.contains('active')){
+    if(k==='a') pick('L',true);
+    else if(k==='s') pick('L',false);
+    else if(k==='k') pick('R',true);
+    else if(k==='l') pick('R',false);
+  }
+  if(k==='enter' && ($('winScreen').classList.contains('active')||$('introScreen').classList.contains('active'))) startMatch();
+});
+$('L_real').onclick=()=>pick('L',true);  $('L_fake').onclick=()=>pick('L',false);
+$('R_real').onclick=()=>pick('R',true);  $('R_fake').onclick=()=>pick('R',false);
+</script>
+</body>
+</html>
