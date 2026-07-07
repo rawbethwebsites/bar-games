@@ -720,3 +720,62 @@ body::before {
 .gavel-result.bad { color: var(--neon-red); }
 .gavel-greens { font-family: 'Orbitron', sans-serif; font-size: 0.75rem; letter-spacing: 0.08em; color: var(--neon-gold); }
 .stage-banner { font-family: 'Inter', sans-serif; font-style: italic; color: var(--neon-gold); text-align: center; margin-bottom: 0.4rem; }
+
+/* ============================================================
+   NEON-PLUS UPGRADE — atmosphere, glass, gradient title,
+   per-game accents. Overrides only the shell look; all
+   functional hooks (ids, classes, data-*) are untouched.
+   ============================================================ */
+:root { --violet: #a56bff; --neon-green: #39ff9e; }
+
+/* atmospheric background layer */
+.fx { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.fx-glow { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; }
+.fx-glow.g1 { width: 60vw; height: 60vw; left: -15vw; top: -10vw; background: radial-gradient(circle, rgba(255,42,109,0.32), transparent 65%); }
+.fx-glow.g2 { width: 60vw; height: 60vw; right: -15vw; top: -5vw; background: radial-gradient(circle, rgba(5,217,232,0.30), transparent 65%); }
+.fx-glow.g3 { width: 50vw; height: 50vw; left: 25vw; bottom: -25vw; background: radial-gradient(circle, rgba(165,107,255,0.26), transparent 65%); }
+.fx-grid { position: absolute; left: 50%; bottom: -2vh; width: 260vw; height: 52vh; transform: translateX(-50%) perspective(46vh) rotateX(66deg);
+  background-image: linear-gradient(rgba(5,217,232,0.26) 1px, transparent 1px), linear-gradient(90deg, rgba(255,42,109,0.20) 1px, transparent 1px);
+  background-size: 5vh 5vh; -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 85%); mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+  animation: fxflow 4s linear infinite; }
+@keyframes fxflow { to { background-position: 0 5vh, 0 0; } }
+.fx-scan { position: absolute; inset: 0; opacity: 0.4; background: repeating-linear-gradient(to bottom, transparent 0 2px, rgba(0,0,0,0.22) 2px 4px); }
+.fx-vig { position: absolute; inset: 0; background: radial-gradient(120% 120% at 50% 40%, transparent 55%, rgba(0,0,0,0.68)); }
+body::before { display: none; }   /* replaced by .fx layer */
+
+/* fonts */
+.arcade-subtitle { font-family: 'Rajdhani', sans-serif; font-weight: 600; letter-spacing: 0.06em; }
+.controls-hint { font-family: 'Rajdhani', sans-serif !important; font-weight: 600; }
+
+/* glass panels */
+.arcade-card {
+  background: rgba(21,23,37,0.62) !important; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12) !important;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 60px rgba(255,42,109,0.06), 0 0 80px rgba(5,217,232,0.05) !important;
+}
+
+/* gradient title with echo */
+.arcade-title { position: relative; letter-spacing: 0.06em; filter: drop-shadow(0 0 22px rgba(165,107,255,0.35)); }
+.arcade-title::after { content: "THE BAR GAMES"; position: absolute; inset: 0; color: transparent; -webkit-text-stroke: 1px rgba(5,217,232,0.22); transform: translate(2px, 2px); z-index: -1; }
+
+/* mode buttons — glass + neon */
+.mode-btn { background: rgba(21,23,37,0.55) !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.12) !important; }
+.mode-btn.neon-red { border-color: rgba(255,42,109,0.45) !important; }
+.mode-btn.neon-blue { border-color: rgba(5,217,232,0.45) !important; }
+.mode-btn.primary { border-color: rgba(255,211,0,0.5) !important; }
+.mode-btn.neon-red:hover { box-shadow: 0 16px 40px rgba(255,42,109,0.28), 0 0 0 1px var(--neon-red) inset !important; }
+.mode-btn.neon-blue:hover { box-shadow: 0 16px 40px rgba(5,217,232,0.28), 0 0 0 1px var(--neon-blue) inset !important; }
+
+/* game cards — per-game neon accent + spine */
+.game-card { background: rgba(21,23,37,0.55) !important; -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); overflow: hidden; }
+.game-card[data-game="guilty"]     { --c: #ff2a6d; }
+.game-card[data-game="objection"]  { --c: #05d9e8; }
+.game-card[data-game="sustained"]  { --c: #a56bff; }
+.game-card[data-game="order"]      { --c: #39ff9e; }
+.game-card[data-game="gavel"]      { --c: #ffd300; }
+.game-card[data-game="tournament"] { --c: #ffd300; }
+.game-card::before { background: radial-gradient(circle at 80% 0%, color-mix(in srgb, var(--c, #05d9e8) 20%, transparent), transparent 70%) !important; }
+.game-card::after { content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--c, #05d9e8); box-shadow: 0 0 16px var(--c, #05d9e8); opacity: 0.9; }
+.game-card:hover { border-color: var(--c, var(--neon-gold)) !important; box-shadow: 0 20px 46px rgba(0,0,0,0.5), 0 0 26px -6px var(--c, #05d9e8) !important; transform: translateY(-5px); }
+.game-card h3 { color: var(--c, #fff); }
+.game-card p { color: var(--muted); }

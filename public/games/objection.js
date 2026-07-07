@@ -104,8 +104,8 @@ function createObjectionGame(app) {
   }
 
   function onKey(key) {
-    if (key === 'a') buzz('red');
-    else if (key === 'l') buzz('blue');
+    if (key === 'a' || key === 'arrowleft') buzz('red');
+    else if (key === 'l' || key === 'arrowright' || key === '6') buzz('blue');
   }
   function onPhoneAction(action, side) { if (action === 'buzz') buzz(side); }
 

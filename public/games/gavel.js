@@ -57,6 +57,7 @@ function createGavelGame(app) {
   }
 
   function loop(ts) {
+    if (typeof requestAnimationFrame === 'undefined') return;
     const dt = Math.min(0.05, (ts - last) / 1000); last = ts;
     ['red', 'blue'].forEach(s => {
       const n = N[s];
@@ -135,8 +136,8 @@ function createGavelGame(app) {
   }
 
   function onKey(key) {
-    if (key === 'a') stop('red');
-    else if (key === 'l') stop('blue');
+    if (key === 'a' || key === 'arrowleft') stop('red');
+    else if (key === 'l' || key === 'arrowright' || key === '6') stop('blue');
   }
   function onPhoneAction(action, side) { if (action === 'buzz' || action === 'stop') stop(side); }
 

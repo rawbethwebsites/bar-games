@@ -5,9 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The Bar Games</title>
   <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="fx" aria-hidden="true">
+    <div class="fx-glow g1"></div><div class="fx-glow g2"></div><div class="fx-glow g3"></div>
+    <div class="fx-grid"></div><div class="fx-scan"></div><div class="fx-vig"></div>
+  </div>
   <div id="app">
     <!-- HOME -->
     <section id="home" class="screen active">
@@ -197,6 +203,10 @@
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="games/guilty.js"></script>
+  <script src="games/objection.js"></script>
+  <script src="games/sustained.js"></script>
+  <script src="games/order.js"></script>
+  <script src="games/gavel.js"></script>
   <script src="host.js"></script>
 </body>
 </html>
