@@ -140,55 +140,71 @@ function initPeer() {
   });
 
   App.peer.on('connection', (conn) => {
-    // Attach data listener immediately — don't wait for 'open',
-    // otherwise messages that arrive early get dropped.
+    // Track which side this connection is claiming, so we can send
+    // the 'joined' confirmation once conn.open fires.
+    let claimedSide = null;
+
     conn.on('data', (msg) => {
       if (msg.type === 'join') {
         const side = msg.side;
-        // Check if the side is already taken by a live connection
+        claimedSide = side;
         const existing = App.connections[side];
-        if (existing) {
-          // Same connection retrying — re-send confirmation, don't reject
-          if (existing === conn) {
-            if (conn.open) conn.send({ type: 'joined', side });
-            return;
-          }
-          // Different connection — if the old one is still alive, reject
+
+        if (existing && existing !== conn) {
+          // Different connection holds this side
           if (existing.open && !existing.dead) {
             if (conn.open) conn.send({ type: 'error', error: 'Side taken' });
             return;
           }
-          // Old connection is dead — clean it up and allow the new one
+          // Old connection is dead — clean it up
           delete App.connections[side];
           onPlayerLeft(side);
         }
+
+        // Store (or re-store) this connection
         App.connections[side] = conn;
         conn.lastSeen = Date.now();
-        // Send confirmation back to the phone
-        if (conn.open) conn.send({ type: 'joined', side });
-        // If conn isn't open yet, the phone will retry and we'll catch it above
+
+        // Send confirmation — only if conn is open. If not open yet,
+        // the conn.on('open') handler below will send it.
+        if (conn.open) {
+          conn.send({ type: 'joined', side });
+        }
         onPlayerJoined(side);
       } else if (msg.type === 'player-action') {
         if (App.activeGame && App.activeGame.onPhoneAction) {
           App.activeGame.onPhoneAction(msg.action, msg.side);
         }
-        // Update lastSeen — this connection is alive
         const s = msg.side;
         if (App.connections[s] === conn) conn.lastSeen = Date.now();
       } else if (msg.type === 'get-controls') {
-        // Phone is polling for current controls — reply with current scheme
         if (App.currentControls && conn.open) {
           conn.send({ type: 'controls', scheme: App.currentControls.scheme, title: App.currentControls.title });
         }
-        // Update lastSeen on any poll too
         for (const s of ['red', 'blue']) {
           if (App.connections[s] === conn) conn.lastSeen = Date.now();
         }
       }
     });
 
+    // When the connection becomes ready, send 'joined' confirmation
+    // if this connection has already claimed a side but hasn't been
+    // confirmed yet (the join message arrived before open).
+    // Also re-send periodically in case the phone missed the first one.
     conn.on('open', () => {
-      // Connection ready — nothing to do, data listener already attached
+      if (claimedSide && App.connections[claimedSide] === conn) {
+        conn.send({ type: 'joined', side: claimedSide });
+      }
+      // Safety net: re-send 'joined' every second for 5 seconds
+      // in case the phone's data listener wasn't attached yet
+      let resendCount = 0;
+      const resendTimer = setInterval(() => {
+        if (!conn.open) { clearInterval(resendTimer); return; }
+        if (claimedSide && App.connections[claimedSide] === conn) {
+          conn.send({ type: 'joined', side: claimedSide });
+        }
+        if (++resendCount >= 5) clearInterval(resendTimer);
+      }, 1000);
     });
 
     conn.on('close', () => {
