@@ -145,11 +145,20 @@ function initPeer() {
     conn.on('data', (msg) => {
       if (msg.type === 'join') {
         const side = msg.side;
-        if (App.connections[side]) {
-          if (conn.open) conn.send({ type: 'error', error: 'Side taken' });
-          return;
+        // Check if the side is already taken by a live connection
+        const existing = App.connections[side];
+        if (existing) {
+          // If the old connection is still open, reject the new join
+          if (existing.open && !existing.dead) {
+            if (conn.open) conn.send({ type: 'error', error: 'Side taken' });
+            return;
+          }
+          // Old connection is dead — clean it up and allow the new one
+          delete App.connections[side];
+          onPlayerLeft(side);
         }
         App.connections[side] = conn;
+        conn.lastSeen = Date.now();
         // Send confirmation back to the phone
         if (conn.open) conn.send({ type: 'joined', side });
         onPlayerJoined(side);
@@ -157,10 +166,17 @@ function initPeer() {
         if (App.activeGame && App.activeGame.onPhoneAction) {
           App.activeGame.onPhoneAction(msg.action, msg.side);
         }
+        // Update lastSeen — this connection is alive
+        const s = msg.side;
+        if (App.connections[s] === conn) conn.lastSeen = Date.now();
       } else if (msg.type === 'get-controls') {
         // Phone is polling for current controls — reply with current scheme
         if (App.currentControls && conn.open) {
           conn.send({ type: 'controls', scheme: App.currentControls.scheme, title: App.currentControls.title });
+        }
+        // Update lastSeen on any poll too
+        for (const s of ['red', 'blue']) {
+          if (App.connections[s] === conn) conn.lastSeen = Date.now();
         }
       }
     });
@@ -197,6 +213,21 @@ function initPeer() {
       initPeer();
     }
   });
+
+  // Heartbeat: every 5s, check if any connection hasn't been seen in 10s
+  // If so, mark it dead so a reconnecting phone can take the slot
+  setInterval(() => {
+    const now = Date.now();
+    for (const side of ['red', 'blue']) {
+      const conn = App.connections[side];
+      if (conn && conn.lastSeen && (now - conn.lastSeen) > 10000) {
+        // Connection is stale — mark it dead and clean up
+        conn.dead = true;
+        delete App.connections[side];
+        onPlayerLeft(side);
+      }
+    }
+  }, 5000);
 }
 
 function generateRoomCode() {
