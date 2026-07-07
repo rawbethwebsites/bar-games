@@ -1,7 +1,8 @@
 const App = {
   mode: 'same-screen',
   roomCode: null,
-  socket: null,
+  peer: null,
+  connections: {}, // { red: conn, blue: conn }
   activeGame: null,
   scores: { red: 0, blue: 0 },
   selectedGame: null,
@@ -105,28 +106,99 @@ function renderLeaderboard(container) {
   if (container) container.insertAdjacentHTML('beforeend', html);
 }
 
-function initSocket() {
-  App.socket = io();
+// ── PeerJS host setup ──────────────────────────────────────────
+function initPeer() {
+  if (App.peer) return;
 
-  App.socket.on('player-joined', ({ side }) => {
-    const dot = document.getElementById(`player-${side}`);
-    if (dot) dot.classList.add('joined');
-    checkStartReady();
-    // Re-send current control scheme so a late-joining phone gets the right layout.
-    if (App.currentControls) App.socket.emit('host-broadcast', { type: 'controls', scheme: App.currentControls.scheme, title: App.currentControls.title });
+  // Generate a short, human-readable room code (5 chars, alphanumeric)
+  const roomCode = generateRoomCode();
+  App.roomCode = roomCode;
+
+  // Use the room code as the peer ID — easy for phones to type
+  App.peer = new Peer('bar-games-' + roomCode);
+
+  App.peer.on('open', (id) => {
+    showPhoneLobby(id, roomCode);
   });
 
-  App.socket.on('player-left', ({ side }) => {
-    const dot = document.getElementById(`player-${side}`);
-    if (dot) dot.classList.remove('joined');
-    checkStartReady();
+  App.peer.on('connection', (conn) => {
+    conn.on('open', () => {
+      conn.on('data', (msg) => {
+        if (msg.type === 'join') {
+          const side = msg.side;
+          if (App.connections[side]) {
+            conn.send({ type: 'error', error: 'Side taken' });
+            return;
+          }
+          App.connections[side] = conn;
+          onPlayerJoined(side);
+        } else if (msg.type === 'player-action') {
+          if (App.activeGame && App.activeGame.onPhoneAction) {
+            App.activeGame.onPhoneAction(msg.action, msg.side);
+          }
+        }
+      });
+
+      conn.on('close', () => {
+        for (const s of ['red', 'blue']) {
+          if (App.connections[s] === conn) {
+            delete App.connections[s];
+            onPlayerLeft(s);
+          }
+        }
+      });
+
+      conn.on('error', () => {
+        for (const s of ['red', 'blue']) {
+          if (App.connections[s] === conn) {
+            delete App.connections[s];
+            onPlayerLeft(s);
+          }
+        }
+      });
+    });
   });
 
-  App.socket.on('player-action', ({ action, side }) => {
-    if (App.activeGame && App.activeGame.onPhoneAction) {
-      App.activeGame.onPhoneAction(action, side);
+  App.peer.on('error', (err) => {
+    console.error('Peer error:', err);
+    // If the ID is taken, try a new code
+    if (err.type === 'unavailable-id') {
+      App.peer.destroy();
+      App.peer = null;
+      initPeer();
     }
   });
+}
+
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no confusing chars (0/O, 1/I)
+  let code = '';
+  for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function onPlayerJoined(side) {
+  const dot = document.getElementById(`player-${side}`);
+  if (dot) dot.classList.add('joined');
+  checkStartReady();
+  // Re-send current control scheme so a late-joining phone gets the right layout.
+  if (App.currentControls) sendToPhone(side, { type: 'controls', scheme: App.currentControls.scheme, title: App.currentControls.title });
+}
+
+function onPlayerLeft(side) {
+  const dot = document.getElementById(`player-${side}`);
+  if (dot) dot.classList.remove('joined');
+  checkStartReady();
+}
+
+function sendToPhone(side, payload) {
+  const conn = App.connections[side];
+  if (conn && conn.open) conn.send(payload);
+}
+
+function broadcastToPhones(payload) {
+  sendToPhone('red', payload);
+  sendToPhone('blue', payload);
 }
 
 function checkStartReady() {
@@ -150,30 +222,35 @@ document.querySelectorAll('[data-mode]').forEach(btn => {
       resetScores();
       showScreen('lobby');
     } else {
-      if (!App.socket) initSocket();
-      App.socket.emit('create-room', (code) => {
-        App.roomCode = code;
-        document.getElementById('room-code').textContent = code;
-        document.getElementById('players-joined').innerHTML = `
-          <div id="player-red" class="player-dot red"></div>
-          <div id="player-blue" class="player-dot blue"></div>
-        `;
-        new QRCode(document.getElementById('qr-container'), {
-          text: `${window.location.origin}/controller.html?room=${code}`,
-          width: 200,
-          height: 200,
-          colorDark: '#0b0c15',
-          colorLight: '#ffffff',
-        });
-        document.getElementById('start-game-btn').onclick = () => {
-          resetScores();
-          showScreen('lobby');
-        };
-        showScreen('phone-lobby');
-      });
+      // Phone mode — start PeerJS host with a short room code
+      initPeer();
     }
   });
 });
+
+function showPhoneLobby(fullPeerId, code) {
+  document.getElementById('room-code').textContent = code;
+  document.getElementById('players-joined').innerHTML = `
+    <div id="player-red" class="player-dot red"></div>
+    <div id="player-blue" class="player-dot blue"></div>
+  `;
+  // QR code links to controller.html with the full peer ID as room param
+  const controllerUrl = `${window.location.origin}/controller.html?room=${encodeURIComponent(fullPeerId)}`;
+  const qrEl = document.getElementById('qr-container');
+  qrEl.innerHTML = '';
+  new QRCode(qrEl, {
+    text: controllerUrl,
+    width: 200,
+    height: 200,
+    colorDark: '#0b0c15',
+    colorLight: '#ffffff',
+  });
+  document.getElementById('start-game-btn').onclick = () => {
+    resetScores();
+    showScreen('lobby');
+  };
+  showScreen('phone-lobby');
+}
 
 // Game factory registry
 const GAME_FACTORIES = {
@@ -208,7 +285,7 @@ App.tournament = null;
 
 function setControls(scheme, title) {
   App.currentControls = { scheme, title };
-  if (App.socket) App.socket.emit('host-broadcast', { type: 'controls', scheme, title });
+  broadcastToPhones({ type: 'controls', scheme, title });
 }
 
 function launchGame(key) {
@@ -300,11 +377,6 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Auto-init socket if coming from a controller join link
-if (window.location.pathname.includes('controller')) {
-  initSocket();
-}
-
 loadScores();
 updateScoreBar();
 
@@ -312,10 +384,128 @@ updateScoreBar();
 const homeScreen = document.getElementById('home');
 if (homeScreen) renderLeaderboard(homeScreen.querySelector('.arcade-card'));
 
-// ---- NEW: Tournament Night (chambers + leaderboard + auto-pair) ----
+
+// ---- Tournament Night (chambers + leaderboard + auto-pair) ─────
+// In PeerJS mode, tournament state lives entirely in the host browser.
 let tournamentCode = null;
 let tournamentState = { players: [], chambers: [], history: [], currentMatch: null };
 let myPlayerId = null;
+
+function makeId() {
+  return Math.random().toString(36).slice(2, 12);
+}
+
+function getTournament() {
+  return tournamentState;
+}
+
+function broadcastTournament() {
+  // No socket broadcast — update local UI directly
+  updateTournamentUI();
+  showMatch();
+}
+
+function addPlayer(name, chamberName) {
+  const t = getTournament();
+  let chamber = t.chambers.find(c => c.name.toLowerCase() === chamberName.toLowerCase().trim());
+  if (!chamber) {
+    const colors = ['#ff2a6d', '#05d9e8', '#ffd300', '#a855f7', '#22c55e', '#f97316'];
+    chamber = {
+      id: makeId(),
+      name: chamberName.trim(),
+      color: colors[t.chambers.length % colors.length],
+      points: 0
+    };
+    t.chambers.push(chamber);
+  }
+  const player = {
+    id: makeId(),
+    name: name.trim(),
+    chamberId: chamber.id,
+    wins: 0,
+    matches: 0
+  };
+  t.players.push(player);
+  broadcastTournament();
+  return player;
+}
+
+function removePlayer(playerId) {
+  const t = getTournament();
+  t.players = t.players.filter(p => p.id !== playerId);
+  broadcastTournament();
+}
+
+function autoPair(game = 'guilty') {
+  const t = getTournament();
+  if (t.players.length < 2) return null;
+
+  const sorted = [...t.players].sort((a, b) => a.matches - b.matches);
+  let bestPair = null;
+  for (const red of sorted) {
+    for (const blue of sorted) {
+      if (red.id === blue.id) continue;
+      if (red.chamberId === blue.chamberId) continue;
+      const alreadyPlayed = t.history.some(h =>
+        (h.redId === red.id && h.blueId === blue.id) ||
+        (h.redId === blue.id && h.blueId === red.id)
+      );
+      if (!alreadyPlayed) {
+        bestPair = { red, blue };
+        break;
+      }
+    }
+    if (bestPair) break;
+  }
+
+  if (!bestPair) {
+    bestPair = { red: sorted[0], blue: sorted[1] };
+  }
+
+  t.currentMatch = {
+    redId: bestPair.red.id,
+    blueId: bestPair.blue.id,
+    redName: bestPair.red.name,
+    blueName: bestPair.blue.name,
+    redChamber: bestPair.red.chamberId,
+    blueChamber: bestPair.blue.chamberId,
+    game,
+    status: 'ready'
+  };
+  broadcastTournament();
+  return t.currentMatch;
+}
+
+function recordResult(winnerId) {
+  const t = getTournament();
+  const match = t.currentMatch;
+  if (!match) return;
+
+  const redPlayer = t.players.find(p => p.id === match.redId);
+  const bluePlayer = t.players.find(p => p.id === match.blueId);
+
+  match.status = 'done';
+  match.winnerId = winnerId;
+  t.history.push(match);
+
+  if (redPlayer) redPlayer.matches += 1;
+  if (bluePlayer) bluePlayer.matches += 1;
+
+  const winningPlayer = winnerId === 'draw' ? null : t.players.find(p => p.id === winnerId);
+  if (winningPlayer) {
+    winningPlayer.wins += 1;
+    const chamber = t.chambers.find(c => c.id === winningPlayer.chamberId);
+    if (chamber) chamber.points += 3;
+  } else {
+    const redChamber = t.chambers.find(c => c.id === match.redChamber);
+    const blueChamber = t.chambers.find(c => c.id === match.blueChamber);
+    if (redChamber) redChamber.points += 1;
+    if (blueChamber) blueChamber.points += 1;
+  }
+
+  t.currentMatch = null;
+  broadcastTournament();
+}
 
 function renderChambers() {
   const el = document.getElementById('tournament-chambers');
@@ -399,21 +589,11 @@ function showMatch() {
   document.getElementById('match-blue-chamber').style.color = blueChamber ? blueChamber.color : 'var(--muted)';
 }
 
-function handleTournamentUpdate(data) {
-  tournamentState = { ...tournamentState, ...data };
-  updateTournamentUI();
-  showMatch();
-}
-
 const tournamentBtn = document.getElementById('tournament-btn');
 if (tournamentBtn) {
   tournamentBtn.addEventListener('click', () => {
-    if (!App.socket) initSocket();
-    App.socket.emit('create-room', (code) => {
-      tournamentCode = code;
-      App.socket.on('tournament-update', handleTournamentUpdate);
-      showScreen('tournament');
-    });
+    tournamentCode = 'local';
+    showScreen('tournament');
   });
 }
 
@@ -422,26 +602,23 @@ if (registerBtn) {
   registerBtn.addEventListener('click', () => {
     const name = document.getElementById('player-name').value.trim();
     const chamber = document.getElementById('chamber-name').value.trim();
-    if (!name || !chamber || !tournamentCode) return alert('Enter your name and chamber.');
-    App.socket.emit('tournament-join', { code: tournamentCode, name, chamber }, (player) => {
-      myPlayerId = player.id;
-      document.getElementById('player-name').value = '';
-      document.getElementById('chamber-name').value = '';
-    });
+    if (!name || !chamber) return alert('Enter your name and chamber.');
+    const player = addPlayer(name, chamber);
+    myPlayerId = player.id;
+    document.getElementById('player-name').value = '';
+    document.getElementById('chamber-name').value = '';
   });
 }
 
 const pairNextBtn = document.getElementById('pair-next-btn');
 if (pairNextBtn) {
   pairNextBtn.addEventListener('click', () => {
-    if (!tournamentCode) return;
-    App.socket.emit('tournament-pair', tournamentCode);
+    autoPair();
   });
 }
 
 function declareWinner(winnerId) {
-  if (!tournamentCode) return;
-  App.socket.emit('tournament-result', { code: tournamentCode, winnerId });
+  recordResult(winnerId);
 }
 
 const winnerRedBtn = document.getElementById('winner-red-btn');
@@ -455,13 +632,3 @@ if (winnerBlueBtn) winnerBlueBtn.addEventListener('click', () => declareWinner(t
 if (winnerDrawBtn) winnerDrawBtn.addEventListener('click', () => declareWinner('draw'));
 if (cancelMatchBtn) cancelMatchBtn.addEventListener('click', () => showMatch());
 if (viewLeaderboardBtn) viewLeaderboardBtn.addEventListener('click', () => { renderFullLeaderboard(); showScreen('leaderboard'); });
-
-// Re-attach tournament listener on reconnect
-function attachTournamentListener() {
-  if (App.socket) App.socket.on('tournament-update', handleTournamentUpdate);
-}
-const oldInitSocket = initSocket;
-initSocket = function() {
-  oldInitSocket();
-  attachTournamentListener();
-};

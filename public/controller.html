@@ -129,6 +129,8 @@
     .pad-btn:active { transform: scale(0.95); }
     .pad-btn.red { background: var(--neon-red); }
     .pad-btn.blue { background: var(--neon-blue); }
+    .pad-arrow-grid { flex: 1; display: flex; flex-direction: column; gap: 1rem; width: 100%; }
+    .pad-arrow-row { flex: 1; display: flex; gap: 1rem; }
     .wait-msg { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--muted); font-size: 1.1rem; padding: 2rem; }
     .flash { animation: flash 0.25s; }
     @keyframes flash { from { filter: brightness(1.6); } to { filter: brightness(1); } }
@@ -142,6 +144,10 @@
       font-size: 0.85rem;
       z-index: 2;
     }
+    #connecting { text-align: center; color: var(--muted); font-size: 1rem; z-index: 1; }
+    .spinner { display: inline-block; width: 32px; height: 32px; border: 3px solid rgba(255,255,255,0.1); border-top-color: var(--neon-gold); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #err-msg { color: var(--neon-red); font-size: 0.9rem; margin-top: 1rem; }
   </style>
 </head>
 <body>
@@ -151,13 +157,19 @@
     <div class="card">
       <img src="tbn-logo.png" alt="The Boost Nation" style="width:60px;height:60px;border-radius:12px;margin-bottom:1rem;" />
       <h2>JOIN GAME</h2>
-      <input id="room-input" placeholder="ROOM" maxlength="5" />
+      <input id="room-input" placeholder="ROOM" />
       <div class="side-select">
         <button class="side-btn red" data-side="red">PROSECUTION</button>
         <button class="side-btn blue" data-side="blue">DEFENCE</button>
       </div>
       <button class="join-btn" id="join-btn">ENTER COURT</button>
+      <div id="err-msg"></div>
     </div>
+  </div>
+
+  <div id="connecting" style="display:none;">
+    <div class="spinner"></div>
+    <p>Connecting to host…</p>
   </div>
 
   <div style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:0.5rem;font-size:0.7rem;color:var(--muted);z-index:2;">
@@ -169,10 +181,10 @@
     <div id="pad"><div class="wait-msg">Waiting for the host to start a game…</div></div>
   </div>
 
-  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="/favicon-blink.js"></script>
   <script>
-    let socket = null;
+    let conn = null;
     let side = null;
     let room = null;
 
@@ -189,8 +201,8 @@
     });
 
     function send(action) {
-      if (!socket || !room) return;
-      socket.emit('player-action', { action, side });
+      if (!conn || !conn.open) return;
+      conn.send({ type: 'player-action', action, side });
       if (navigator.vibrate) navigator.vibrate(30);
     }
 
@@ -214,6 +226,20 @@
       } else if (scheme === 'abcd') {
         const grid = document.createElement('div'); grid.className = 'pad-grid'; pad.appendChild(grid);
         ['A', 'B', 'C', 'D'].forEach(l => mkBtn(l, l.toLowerCase(), 'pad-btn ' + side, grid));
+      } else if (scheme === 'yesno' || scheme === 'freedetain' || scheme === 'sustainoverrule') {
+        // Two-button scheme: A/B = left-right or yes-no or free-detain
+        const labels = scheme === 'yesno' ? ['YES', 'NO']
+                     : scheme === 'freedetain' ? ['FREE', 'DETAIn']
+                     : ['SUSTAIN', 'OVERRULE'];
+        mkBtn(labels[0], 'a', 'buzz-single blue', pad);
+        mkBtn(labels[1], 'b', 'buzz-single red', pad);
+      } else if (scheme === 'cycle') {
+        // Voir Dire: up/down cycle + lock button
+        const wrap = document.createElement('div'); wrap.className = 'pad-arrow-grid'; pad.appendChild(wrap);
+        const row = document.createElement('div'); row.className = 'pad-arrow-row'; wrap.appendChild(row);
+        mkBtn('▲', 'up', 'buzz-single ' + side, row);
+        mkBtn('▼', 'down', 'buzz-single ' + side, row);
+        mkBtn('LOCK', 'buzz', 'buzz-single ' + side, wrap);
       } else { // realfake (default)
         mkBtn('REAL', 'real', 'buzz-single blue', pad);
         mkBtn('FAKE', 'fake', 'buzz-single red', pad);
@@ -221,19 +247,52 @@
     }
 
     document.getElementById('join-btn').addEventListener('click', () => {
-      room = document.getElementById('room-input').value.toUpperCase();
-      if (!room || !side) return alert('Enter room code and pick a side.');
-      socket = io();
+      room = document.getElementById('room-input').value;
+      if (!room || !side) { document.getElementById('err-msg').textContent = 'Enter room code and pick a side.'; return; }
+      document.getElementById('err-msg').textContent = '';
+      document.getElementById('join-panel').style.display = 'none';
+      document.getElementById('connecting').style.display = 'block';
 
-      socket.on('host-broadcast', (payload) => {
-        if (payload && payload.type === 'controls') renderControls(payload.scheme, payload.title);
+      // Connect to the host's PeerJS peer ID
+      // If the room value is short (5 chars, the room code), prepend the prefix
+      // If it's long (full peer ID from QR code), use as-is
+      const hostId = room.length <= 5 ? 'bar-games-' + room.toUpperCase() : room;
+
+      const peer = new Peer();
+
+      peer.on('open', () => {
+        conn = peer.connect(hostId, { reliable: true });
+
+        conn.on('open', () => {
+          document.getElementById('connecting').style.display = 'none';
+          document.getElementById('game-panel').style.display = 'flex';
+          document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
+          // Tell host we joined
+          conn.send({ type: 'join', side });
+        });
+
+        conn.on('data', (payload) => {
+          if (payload && payload.type === 'controls') renderControls(payload.scheme, payload.title);
+        });
+
+        conn.on('close', () => {
+          document.getElementById('game-panel').style.display = 'none';
+          document.getElementById('join-panel').style.display = 'block';
+          document.getElementById('err-msg').textContent = 'Host disconnected.';
+          document.getElementById('connecting').style.display = 'none';
+        });
+
+        conn.on('error', (err) => {
+          document.getElementById('connecting').style.display = 'none';
+          document.getElementById('join-panel').style.display = 'block';
+          document.getElementById('err-msg').textContent = 'Could not reach host. Check the room code.';
+        });
       });
 
-      socket.emit('join-room', { code: room, side }, (res) => {
-        if (!res.ok) return alert(res.error);
-        document.getElementById('join-panel').style.display = 'none';
-        document.getElementById('game-panel').style.display = 'flex';
-        document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
+      peer.on('error', (err) => {
+        document.getElementById('connecting').style.display = 'none';
+        document.getElementById('join-panel').style.display = 'block';
+        document.getElementById('err-msg').textContent = 'Connection error: ' + err.type;
       });
     });
   </script>
