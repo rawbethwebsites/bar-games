@@ -253,58 +253,84 @@
       document.getElementById('join-panel').style.display = 'none';
       document.getElementById('connecting').style.display = 'block';
 
-      // Connect to the host's PeerJS peer ID
       // If the room value is short (5 chars, the room code), prepend the prefix
       // If it's long (full peer ID from QR code), use as-is
       const hostId = room.length <= 5 ? 'bar-games-' + room.toUpperCase() : room;
 
-      const peer = new Peer();
+      let peer = null;
+      let joined = false;
+      let retryTimer = null;
 
-      peer.on('open', () => {
-        conn = peer.connect(hostId, { reliable: true });
+      function connectToHost() {
+        peer = new Peer();
 
-        conn.on('open', () => {
-          document.getElementById('connecting').style.display = 'none';
-          document.getElementById('game-panel').style.display = 'flex';
-          document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
-          // Tell host we joined — send it now that the data channel is open
-          conn.send({ type: 'join', side });
-        });
+        peer.on('open', () => {
+          conn = peer.connect(hostId, { reliable: true });
 
-        // Fallback: if 'open' doesn't fire within 3s but connection exists,
-        // try sending the join message anyway
-        setTimeout(() => {
-          if (conn && conn.open && !document.getElementById('game-panel').style.display.includes('flex')) {
-            document.getElementById('connecting').style.display = 'none';
-            document.getElementById('game-panel').style.display = 'flex';
-            document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
+          conn.on('open', () => {
+            // Send join message
             conn.send({ type: 'join', side });
-          }
-        }, 3000);
+            // Retry sending join every 500ms until host confirms
+            retryTimer = setInterval(() => {
+              if (!joined && conn && conn.open) {
+                conn.send({ type: 'join', side });
+              }
+            }, 500);
+          });
 
-        conn.on('data', (payload) => {
-          if (payload && payload.type === 'controls') renderControls(payload.scheme, payload.title);
+          conn.on('data', (payload) => {
+            if (payload && payload.type === 'joined') {
+              // Host confirmed our join
+              joined = true;
+              if (retryTimer) clearInterval(retryTimer);
+              document.getElementById('connecting').style.display = 'none';
+              document.getElementById('game-panel').style.display = 'flex';
+              document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
+            } else if (payload && payload.type === 'error') {
+              if (retryTimer) clearInterval(retryTimer);
+              document.getElementById('connecting').style.display = 'none';
+              document.getElementById('join-panel').style.display = 'block';
+              document.getElementById('err-msg').textContent = payload.error || 'Could not join.';
+            } else if (payload && payload.type === 'controls') {
+              renderControls(payload.scheme, payload.title);
+            }
+          });
+
+          // Timeout: if no response in 8s, show error
+          setTimeout(() => {
+            if (!joined) {
+              if (retryTimer) clearInterval(retryTimer);
+              document.getElementById('connecting').style.display = 'none';
+              document.getElementById('join-panel').style.display = 'block';
+              document.getElementById('err-msg').textContent = 'Could not reach host. Check the room code.';
+            }
+          }, 8000);
+
+          conn.on('close', () => {
+            if (retryTimer) clearInterval(retryTimer);
+            document.getElementById('game-panel').style.display = 'none';
+            document.getElementById('join-panel').style.display = 'block';
+            document.getElementById('err-msg').textContent = 'Host disconnected.';
+            document.getElementById('connecting').style.display = 'none';
+          });
+
+          conn.on('error', () => {
+            if (retryTimer) clearInterval(retryTimer);
+            document.getElementById('connecting').style.display = 'none';
+            document.getElementById('join-panel').style.display = 'block';
+            document.getElementById('err-msg').textContent = 'Connection failed. Try again.';
+          });
         });
 
-        conn.on('close', () => {
-          document.getElementById('game-panel').style.display = 'none';
-          document.getElementById('join-panel').style.display = 'block';
-          document.getElementById('err-msg').textContent = 'Host disconnected.';
+        peer.on('error', (err) => {
+          if (retryTimer) clearInterval(retryTimer);
           document.getElementById('connecting').style.display = 'none';
-        });
-
-        conn.on('error', (err) => {
-          document.getElementById('connecting').style.display = 'none';
           document.getElementById('join-panel').style.display = 'block';
-          document.getElementById('err-msg').textContent = 'Could not reach host. Check the room code.';
+          document.getElementById('err-msg').textContent = 'Connection error: ' + (err.type || 'unknown');
         });
-      });
+      }
 
-      peer.on('error', (err) => {
-        document.getElementById('connecting').style.display = 'none';
-        document.getElementById('join-panel').style.display = 'block';
-        document.getElementById('err-msg').textContent = 'Connection error: ' + err.type;
-      });
+      connectToHost();
     });
   </script>
 </body>

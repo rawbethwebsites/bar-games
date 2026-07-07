@@ -132,6 +132,8 @@ function initPeer() {
           return;
         }
         App.connections[side] = conn;
+        // Send confirmation back to the phone
+        if (conn.open) conn.send({ type: 'joined', side });
         onPlayerJoined(side);
       } else if (msg.type === 'player-action') {
         if (App.activeGame && App.activeGame.onPhoneAction) {
