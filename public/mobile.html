@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>The Bar Games — Play on PC</title>
+  <link rel="icon" type="image/png" href="/favicon-1.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b0c15;
+      --panel: #151725;
+      --panel-2: #1c1e31;
+      --neon-red: #ff2a6d;
+      --neon-blue: #05d9e8;
+      --neon-gold: #ffd300;
+      --neon-green: #39ff9e;
+      --violet: #a56bff;
+      --text: #f0f0f0;
+      --muted: #7a7d9c;
+      --border: rgba(255, 255, 255, 0.1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    /* Atmospheric background */
+    .fx { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .fx-glow { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.5; }
+    .fx-glow.g1 { width: 80vw; height: 80vw; left: -20vw; top: -15vw; background: radial-gradient(circle, rgba(255,42,109,0.32), transparent 65%); }
+    .fx-glow.g2 { width: 80vw; height: 80vw; right: -20vw; top: 10vh; background: radial-gradient(circle, rgba(5,217,232,0.30), transparent 65%); }
+    .fx-glow.g3 { width: 70vw; height: 70vw; left: 15vw; bottom: -20vw; background: radial-gradient(circle, rgba(165,107,255,0.26), transparent 65%); }
+    .fx-grid {
+      position: absolute; left: 50%; bottom: -2vh; width: 260vw; height: 40vh;
+      transform: translateX(-50%) perspective(46vh) rotateX(66deg);
+      background-image: linear-gradient(rgba(5,217,232,0.26) 1px, transparent 1px), linear-gradient(90deg, rgba(255,42,109,0.20) 1px, transparent 1px);
+      background-size: 5vh 5vh;
+      -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+      mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+      animation: fxflow 4s linear infinite;
+    }
+    @keyframes fxflow { to { background-position: 0 5vh, 0 0; } }
+
+    .wrap { position: relative; z-index: 1; max-width: 540px; margin: 0 auto; padding: 0 1.25rem 5rem; }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 2.5rem 0 1.5rem;
+    }
+    .tbn-logo {
+      width: 72px; height: 72px; border-radius: 16px;
+      margin: 0 auto 1.25rem; display: block;
+      box-shadow: 0 0 30px rgba(255, 211, 0, 0.3);
+      object-fit: cover;
+    }
+    .hero h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(2rem, 9vw, 3rem);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: linear-gradient(90deg, var(--neon-red), var(--neon-gold), var(--neon-blue));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 22px rgba(165,107,255,0.35));
+      line-height: 1.1;
+    }
+    .hero .tagline {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-top: 0.5rem;
+    }
+
+    /* How to Play banner */
+    .how-to {
+      background: rgba(21,23,37,0.62);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px;
+      padding: 1.75rem 1.5rem;
+      margin: 1.5rem 0 2rem;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .how-to h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--neon-gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      text-align: center;
+    }
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.85rem;
+    }
+    .step-num {
+      flex: 0 0 auto;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(255,211,0,0.12);
+      border: 1px solid rgba(255,211,0,0.4);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      color: var(--neon-gold);
+    }
+    .step-text {
+      flex: 1;
+      font-size: 0.95rem;
+      line-height: 1.45;
+      color: var(--text);
+      padding-top: 0.15rem;
+    }
+    .step-text b { color: var(--neon-gold); }
+    .step-text .step-icon { font-size: 1.1rem; margin-right: 0.2rem; }
+
+    .join-cta {
+      display: block;
+      width: 100%;
+      padding: 1.1rem;
+      border-radius: 14px;
+      border: 1px solid rgba(255,211,0,0.5);
+      background: rgba(255,211,0,0.1);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      color: var(--neon-gold);
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 1.25rem;
+    }
+    .join-cta:hover, .join-cta:active {
+      background: rgba(255,211,0,0.2);
+      border-color: var(--neon-gold);
+      box-shadow: 0 0 24px rgba(255,211,0,0.3);
+    }
+
+    /* Games section */
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--neon-blue);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin: 0.5rem 0 1.25rem;
+      text-align: center;
+    }
+    .section-title .count {
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .game-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+    .game-item {
+      background: rgba(21,23,37,0.55);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 16px;
+      padding: 1.25rem 1.15rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.9rem;
+      overflow: hidden;
+      position: relative;
+      transition: transform 0.15s, border-color 0.15s;
+    }
+    .game-item:active { transform: scale(0.98); }
+    .game-item::after {
+      content: "";
+      position: absolute; left: 0; top: 0; height: 100%; width: 3px;
+      background: var(--c, var(--neon-blue));
+      box-shadow: 0 0 12px var(--c, var(--neon-blue));
+      opacity: 0.85;
+    }
+    .game-item[data-game="cross"]     { --c: var(--neon-blue); }
+    .game-item[data-game="habeas"]    { --c: var(--neon-green); }
+    .game-item[data-game="closing"]   { --c: var(--violet); }
+    .game-item[data-game="voir"]      { --c: var(--neon-gold); }
+    .game-item[data-game="overruled"] { --c: var(--neon-red); }
+    .game-item[data-game="guilty"]    { --c: var(--neon-red); }
+    .game-item[data-game="objection"] { --c: var(--neon-blue); }
+    .game-item[data-game="sustained"] { --c: var(--violet); }
+    .game-item[data-game="order"]     { --c: var(--neon-green); }
+    .game-item[data-game="gavel"]     { --c: var(--neon-gold); }
+
+    .game-icon {
+      flex: 0 0 auto;
+      font-size: 1.8rem;
+      width: 44px; height: 44px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .game-body { flex: 1; min-width: 0; }
+    .game-body h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: var(--c, var(--text));
+      margin-bottom: 0.3rem;
+    }
+    .game-body p {
+      font-size: 0.85rem;
+      line-height: 1.4;
+      color: var(--muted);
+    }
+    .game-body .controls-tag {
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      padding: 0.2rem 0.5rem;
+    }
+
+    /* About section */
+    .about {
+      margin-top: 2.5rem;
+      text-align: center;
+      padding: 1.5rem 1.25rem;
+      background: rgba(21,23,37,0.42);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+    }
+    .about h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      color: var(--neon-gold);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 0.75rem;
+    }
+    .about p {
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+    .about p + p { margin-top: 0.6rem; }
+    .about b { color: var(--text); }
+
+    /* PC link */
+    .pc-link {
+      display: block;
+      text-align: center;
+      margin-top: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.08em;
+      color: var(--neon-blue);
+      text-decoration: none;
+      padding: 0.85rem;
+      border: 1px solid rgba(5,217,232,0.3);
+      border-radius: 12px;
+      background: rgba(5,217,232,0.05);
+      transition: all 0.2s;
+    }
+    .pc-link:hover, .pc-link:active {
+      background: rgba(5,217,232,0.12);
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 20px rgba(5,217,232,0.2);
+    }
+
+    /* Footer */
+    .tbn-footer {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+      letter-spacing: 0.03em;
+    }
+    .tbn-footer strong { color: var(--neon-gold); font-weight: 700; }
+    .footer-dot { margin: 0 0.4rem; opacity: 0.5; }
+
+    /* Desktop note */
+    .desktop-note {
+      display: none;
+      text-align: center;
+      padding: 2rem;
+      font-family: 'Orbitron', sans-serif;
+      color: var(--muted);
+    }
+    @media (min-width: 900px) {
+      .wrap { max-width: 700px; }
+      .game-list { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+      .desktop-note { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <div class="fx" aria-hidden="true">
+    <div class="fx-glow g1"></div><div class="fx-glow g2"></div><div class="fx-glow g3"></div>
+    <div class="fx-grid"></div>
+  </div>
+
+  <div class="wrap">
+    <!-- Hero -->
+    <div class="hero">
+      <img src="tbn-logo.png" alt="The Boost Nation" class="tbn-logo" />
+      <h1>THE BAR<br>GAMES</h1>
+      <p class="tagline">Ten law-flavoured party games · Two players · One courtroom</p>
+    </div>
+
+    <!-- How to Play -->
+    <div class="how-to">
+      <h2>⚖️ How to Play</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text"><span class="step-icon">💻</span> Open <b>bar-games.theboostnation.com</b> on a <b>PC or laptop</b> — that's the courtroom (big screen required)</div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text"><span class="step-icon">📲</span> Click <b>USE PHONES</b> on the PC — a QR code and room code appear</div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text"><span class="step-icon">📷</span> Scan the QR code with your phone (or go to the controller link and type the room code)</div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text"><span class="step-icon">⚖️</span> Pick <b>Prosecution</b> or <b>Defence</b> → tap <b>ENTER COURT</b> → the PC shows the game, your phone becomes your buzzer</div>
+        </div>
+      </div>
+      <a href="/controller.html" class="join-cta">Join a Game →</a>
+    </div>
+
+    <!-- Games -->
+    <h2 class="section-title">The Games <span class="count">(10)</span></h2>
+    <div class="game-list">
+      <div class="game-item" data-game="cross">
+        <div class="game-icon">🔦</div>
+        <div class="game-body">
+          <h3>Cross Examination</h3>
+          <p>Read the witness statement, answer yes or no — get it right to score. Fast and tense.</p>
+          <span class="controls-tag">Yes / No</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="habeas">
+        <div class="game-icon">🔓</div>
+        <div class="game-body">
+          <h3>Habeas Corpus</h3>
+          <p>Hear the case — should they be freed or detained? Judge wisely, the gavel is watching.</p>
+          <span class="controls-tag">Free / Detain</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="closing">
+        <div class="game-icon">🎤</div>
+        <div class="game-body">
+          <h3>Closing Argument</h3>
+          <p>Fill in the blank with the most persuasive (or absurd) closing line. The room votes.</p>
+          <span class="controls-tag">A / B / C / D</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="voir">
+        <div class="game-icon">🧑‍⚖️</div>
+        <div class="game-body">
+          <h3>Voir Dire</h3>
+          <p>Cycle through jurors, read the clues, pick the one that favours your side. Lock it in.</p>
+          <span class="controls-tag">▲ / ▼ / Lock</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="overruled">
+        <div class="game-icon">⚖️</div>
+        <div class="game-body">
+          <h3>Overruled!</h3>
+          <p>The judge rules on a motion — sustain or overrule? Know your courtroom procedure.</p>
+          <span class="controls-tag">Sustain / Overrule</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="guilty">
+        <div class="game-icon">⚖</div>
+        <div class="game-body">
+          <h3>Guilty or Not Guilty</h3>
+          <p>Real lawsuit or totally fake? Spot the real cases to win. Some are stranger than fiction.</p>
+          <span class="controls-tag">Real / Fake</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="objection">
+        <div class="game-icon">🗣</div>
+        <div class="game-body">
+          <h3>Objection!</h3>
+          <p>Fastest buzzer wins. Wait for the signal, slam your button — but buzz too early and you're penalised.</p>
+          <span class="controls-tag">Buzz In</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="sustained">
+        <div class="game-icon">❓</div>
+        <div class="game-body">
+          <h3>Sustained</h3>
+          <p>Legal trivia sprint. Multiple choice, four options, one right answer. Speed + accuracy.</p>
+          <span class="controls-tag">A / B / C / D</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="order">
+        <div class="game-icon">🤣</div>
+        <div class="game-body">
+          <h3>Order in the Court</h3>
+          <p>The funniest line wins. Complete the prompt, the room votes on the best (worst?) argument.</p>
+          <span class="controls-tag">A / B / C / D</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="gavel">
+        <div class="game-icon">🔨</div>
+        <div class="game-body">
+          <h3>Beat the Gavel</h3>
+          <p>Stop the needle in the green zone. Time it right — miss the sweet spot and you lose points.</p>
+          <span class="controls-tag">Buzz In</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="about">
+      <h2>About</h2>
+      <p><b>The Bar Games</b> is a two-player courtroom party game built for bars, parties, and head-to-head duels.</p>
+      <p>The <b>big screen</b> (PC or laptop) is the courtroom — it shows the cases, scores, and verdicts. Your <b>phone</b> is your buzzer — tap to answer, buzz in, or lock your choice.</p>
+      <p>Works from anywhere — your phone just needs internet, no same Wi-Fi required.</p>
+    </div>
+
+    <!-- PC link -->
+    <a href="/" class="pc-link">🖥️ Open on PC → bar-games.theboostnation.com</a>
+
+    <!-- Footer -->
+    <div class="tbn-footer">
+      <span>Courtesy of Bar Mary</span>
+      <span class="footer-dot">·</span>
+      <span>Powered by <a href="https://theboostnation.com" target="_blank" rel="noopener" style="color:inherit;text-decoration:none;"><strong>The Boost Nation</strong></a></span>
+    </div>
+  </div>
+
+  <script src="/favicon-blink.js"></script>
+</body>
+</html>
