@@ -218,6 +218,11 @@
     .game-item[data-game="sustained"] { --c: var(--violet); }
     .game-item[data-game="order"]     { --c: var(--neon-green); }
     .game-item[data-game="gavel"]     { --c: var(--neon-gold); }
+    .game-item[data-game="plea"]      { --c: var(--neon-green); }
+    .game-item[data-game="discovery"] { --c: var(--violet); }
+    .game-item[data-game="summons"]   { --c: var(--neon-blue); }
+    .game-item[data-game="parole"]    { --c: var(--neon-red); }
+    .game-item[data-game="contempt"]  { --c: var(--neon-gold); }
 
     .game-icon {
       flex: 0 0 auto;
@@ -342,7 +347,7 @@
     <div class="hero">
       <img src="tbn-logo.png" alt="The Boost Nation" class="tbn-logo" />
       <h1>THE BAR<br>GAMES</h1>
-      <p class="tagline">Ten law-flavoured party games · Two players · One courtroom</p>
+      <p class="tagline">Fifteen law-flavoured party games · Two players · One courtroom</p>
     </div>
 
     <!-- How to Play -->
@@ -370,7 +375,7 @@
     </div>
 
     <!-- Games -->
-    <h2 class="section-title">The Games <span class="count">(10)</span></h2>
+    <h2 class="section-title">The Games <span class="count">(15)</span></h2>
     <div class="game-list">
       <div class="game-item" data-game="cross">
         <div class="game-icon">🔦</div>
@@ -459,6 +464,51 @@
           <h3>Beat the Gavel</h3>
           <p>Stop the needle in the green zone. Time it right — miss the sweet spot and you lose points.</p>
           <span class="controls-tag">Buzz In</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="plea">
+        <div class="game-icon">🤝</div>
+        <div class="game-body">
+          <h3>Plea Bargain</h3>
+          <p>Accept the plea deal or risk it at trial. Read the evidence and make the smart call.</p>
+          <span class="controls-tag">Plea / Trial</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="discovery">
+        <div class="game-icon">📋</div>
+        <div class="game-body">
+          <h3>Discovery Dispute</h3>
+          <p>One side wants evidence. Should the other comply or object? Test your litigation instincts.</p>
+          <span class="controls-tag">Comply / Object</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="summons">
+        <div class="game-icon">📞</div>
+        <div class="game-body">
+          <h3>Summons Race</h3>
+          <p>Legal term appears — buzz in and pick the right definition from four options. Fastest wins.</p>
+          <span class="controls-tag">A / B / C / D</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="parole">
+        <div class="game-icon">🚪</div>
+        <div class="game-body">
+          <h3>Parole Hearing</h3>
+          <p>Inmate is up for release. Read their case — grant parole or deny? Judge their risk.</p>
+          <span class="controls-tag">Grant / Deny</span>
+        </div>
+      </div>
+
+      <div class="game-item" data-game="contempt">
+        <div class="game-icon">😤</div>
+        <div class="game-body">
+          <h3>Contempt of Court</h3>
+          <p>Someone did something outrageous in court. Hold them in contempt or let it go?</p>
+          <span class="controls-tag">Contempt / Let Go</span>
         </div>
       </div>
     </div>

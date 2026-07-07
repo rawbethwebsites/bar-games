@@ -45,6 +45,7 @@ function createClosingGame(app) {
     chosen[side] = dealt[side][idx];
     const tile = document.querySelector(`#grid-${side} [data-idx="${idx}"]`);
     if (tile) tile.classList.add('picked');
+    if (window.SFX) SFX.lock();
     document.getElementById('col-' + side).classList.add('locked');
     document.getElementById('stat-' + side).textContent = 'Locked in!';
     if (chosen.red !== null && chosen.blue !== null) setTimeout(openVote, 450);

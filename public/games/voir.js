@@ -63,6 +63,7 @@ function createVoirGame(app) {
   function lockIn(side) {
     if (locked[side]) return;
     locked[side] = true;
+    if (window.SFX) SFX.lock();
     const stat = document.getElementById('stat-' + side);
     if (stat) stat.textContent = 'LOCKED';
     if (locked.red && locked.blue) resolve();

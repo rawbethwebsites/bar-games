@@ -55,6 +55,7 @@ function createObjectionGame(app) {
   function showGo() {
     state = 'go'; setArena('go'); goAt = performance.now();
     setBig('OBJECTION!'); setSub('BUZZ NOW');
+    if (window.SFX) SFX.buzz();
   }
 
   function setBig(t, cls) { const el = document.getElementById('obj-big'); if (el) { el.className = 'obj-big' + (cls ? ' ' + cls : ''); el.textContent = t; } }
@@ -63,6 +64,7 @@ function createObjectionGame(app) {
   function buzz(side) {
     if (state === 'idle' || state === 'resolved') return;
     const other = side === 'red' ? 'blue' : 'red';
+    if (window.SFX) SFX.buzz();
     if (state === 'wait') return award(other, sideName(side) + ' jumped the gun — false start!');
     if (state === 'sustain') return award(other, sideName(side) + ' pressed on SUSTAINED!');
     if (state === 'go') {

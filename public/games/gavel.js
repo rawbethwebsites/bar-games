@@ -79,6 +79,7 @@ function createGavelGame(app) {
     const inZone = Math.abs(n.pos - 0.5) <= zone / 2;
     n.hit = inZone;
     document.getElementById('meter-' + side).classList.add(inZone ? 'hit' : 'miss');
+    if (window.SFX) { if (inZone) SFX.point(); else SFX.gavel(); }
     const res = document.getElementById('res-' + side);
     if (inZone) { res.textContent = 'NOT GUILTY — clean stop!'; res.className = 'gavel-result good'; }
     else { res.textContent = n.pos < 0.5 ? 'Too early — GUILTY' : 'Too late — GUILTY'; res.className = 'gavel-result bad'; }

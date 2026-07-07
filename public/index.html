@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
+  <div class="sfx-toggle" id="sfx-toggle" title="Toggle sound">🔊</div>
   <div class="fx" aria-hidden="true">
     <div class="fx-glow g1"></div><div class="fx-glow g2"></div><div class="fx-glow g3"></div>
     <div class="fx-grid"></div><div class="fx-scan"></div><div class="fx-vig"></div>
@@ -21,7 +22,7 @@
       <div class="arcade-card">
         <img src="tbn-logo.png" alt="The Boost Nation" class="tbn-logo" />
         <h1 class="arcade-title">THE BAR GAMES</h1>
-        <p class="arcade-subtitle">Five law-flavoured party games for two players</p>
+        <p class="arcade-subtitle">Fifteen law-flavoured party games for two players</p>
 
         <div class="mode-select">
           <button class="mode-btn neon-red" data-mode="same-screen">
@@ -245,6 +246,7 @@
       }
     })();
   </script>
+  <script src="/sfx.js"></script>
   <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script src="games/cross.js"></script>
@@ -257,7 +259,21 @@
   <script src="games/sustained.js"></script>
   <script src="games/order.js"></script>
   <script src="games/gavel.js"></script>
+  <script src="games/plea.js"></script>
+  <script src="games/discovery.js"></script>
+  <script src="games/summons.js"></script>
+  <script src="games/parole.js"></script>
+  <script src="games/contempt.js"></script>
   <script src="host.js"></script>
   <script src="/favicon-blink.js"></script>
+  <script>
+    // SFX mute toggle
+    document.getElementById('sfx-toggle').addEventListener('click', function() {
+      if (window.SFX) {
+        const muted = SFX.toggleMute();
+        this.textContent = muted ? '🔇' : '🔊';
+      }
+    });
+  </script>
 </body>
 </html>

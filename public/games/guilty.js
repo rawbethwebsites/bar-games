@@ -85,6 +85,7 @@ function createGuiltyGame(app) {
 
     if (locked.red && locked.blue) {
       clearInterval(timer);
+      if (window.SFX) SFX.lock();
       setTimeout(reveal, 400);
     }
   }

@@ -54,8 +54,9 @@ function createOverruledGame(app) {
     document.querySelector(`.split-col.${side}`).classList.add('locked');
     const correct = answer === cur.sustained;
     const stat = document.getElementById('stat-' + side);
-    stat.textContent = correct ? 'Correct ruling!' : 'Wrong ruling!';
+    stat.textContent = correct ? 'Correct!' : 'Wrong!';
     stat.style.color = correct ? 'var(--neon-green)' : 'var(--neon-red)';
+    if (window.SFX) { if (correct) SFX.correct(); else SFX.wrong(); }
     if (ans.red !== null && ans.blue !== null) resolve();
   }
 

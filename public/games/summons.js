@@ -1,4 +1,4 @@
-function createSustainedGame(app) {
+function createSummonsGame(app) {
   const MAX = 10, QTIME = 11;
   const LETTERS = ['A', 'B', 'C', 'D'];
   const LKEYS = { q: 0, w: 1, a: 2, s: 3 };
@@ -11,14 +11,14 @@ function createSustainedGame(app) {
 
   function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 
-  async function load() { const res = await fetch('games/sustained.json'); bank = await res.json(); }
+  async function load() { const res = await fetch('games/summons.json'); bank = await res.json(); }
 
   function setHint() {
     const h = document.querySelector('.controls-hint');
     if (h) h.innerHTML = '<span><b>LEFT:</b> Q W A S</span><span><b>RIGHT:</b> U I J K</span>';
   }
 
-  function buildGrid(sel, labels, side) {
+  function buildGrid(labels, side) {
     return cur.options.map((opt, idx) =>
       `<button class="opt-tile" data-side="${side}" data-idx="${idx}">
          <span class="k">${labels[idx]}</span><span class="t"><b style="color:var(--neon-gold)">${LETTERS[idx]}.</b> ${opt}</span>
@@ -29,16 +29,16 @@ function createSustainedGame(app) {
     stage.innerHTML = `
       <div class="stage-wrap">
         <div class="stage-q">
-          <div class="lab">Question ${round} / ${MAX} — before the court</div>
-          <div class="qtext">${cur.q}</div>
+          <div class="lab">Term ${round} / ${MAX} — summons race</div>
+          <div class="qtext">Define the legal term:<br><b style="color:var(--neon-gold);font-size:1.4rem;">${cur.term}</b></div>
           <div class="timer-bar" style="margin-top:1rem;"><div class="fill" id="timer-fill"></div></div>
         </div>
         <div class="split-cols">
           <div class="split-col red" id="col-red"><div class="tag">🔴 Prosecution — Q W A S</div>
-            <div class="tile-grid" id="grid-red">${buildGrid('red', LLAB, 'red')}</div>
+            <div class="tile-grid" id="grid-red">${buildGrid(LLAB, 'red')}</div>
             <div class="col-status" id="stat-red"></div></div>
           <div class="split-col blue" id="col-blue"><div class="tag">🔵 Defence — U I J K</div>
-            <div class="tile-grid" id="grid-blue">${buildGrid('blue', RLAB, 'blue')}</div>
+            <div class="tile-grid" id="grid-blue">${buildGrid(RLAB, 'blue')}</div>
             <div class="col-status" id="stat-blue"></div></div>
         </div>
       </div>`;
@@ -99,14 +99,14 @@ function createSustainedGame(app) {
     ans = { red: null, blue: null }; firstCorrect = null; resolving = false;
     const raw = deck[round]; round++;
     const order = shuffle([0, 1, 2, 3]);
-    cur = { q: raw.q, options: order.map(i => raw.options[i]), a: order.indexOf(raw.a) };
+    cur = { term: raw.term, options: order.map(i => raw.options[i]), a: order.indexOf(raw.a) };
     stage.innerHTML = `<div class="countdown"></div>`;
     showCountdown(stage.firstElementChild, renderQuestion);
   }
 
   async function start() {
     if (!bank.length) await load();
-    deck = getUnusedItems(bank, 'sustained', MAX);
+    deck = getUnusedItems(bank, 'summons', MAX);
     round = 0;
     app.scores = { red: 0, blue: 0 };
     updateScoreBar(); setHint();
@@ -119,6 +119,7 @@ function createSustainedGame(app) {
     if (key in LKEYS) pick('red', LKEYS[key]);
     else if (key in RKEYS) pick('blue', RKEYS[key]);
   }
+  // abcd scheme: actions a/b/c/d → index 0/1/2/3
   function onPhoneAction(action, side) {
     const map = { a: 0, b: 1, c: 2, d: 3 };
     if (action in map) pick(side, map[action]);

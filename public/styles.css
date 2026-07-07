@@ -520,20 +520,252 @@ body::before {
 
 .winner-screen h2 {
   font-family: 'Orbitron', sans-serif;
-  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-size: clamp(2rem, 6vw, 3.5rem);
   color: var(--neon-gold);
   text-shadow: 0 0 30px rgba(255,211,0,0.4);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .winner-screen .winner-name {
-  font-size: 2rem;
+  font-size: clamp(1.3rem, 4vw, 2rem);
   color: var(--text);
-  margin-bottom: 2.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .winner-screen .winner-name.red { color: var(--neon-red); text-shadow: 0 0 20px rgba(255,42,109,0.5); }
 .winner-screen .winner-name.blue { color: var(--neon-blue); text-shadow: 0 0 20px rgba(5,217,232,0.5); }
+
+.verdict-scores {
+  color: var(--muted);
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+}
+.verdict-scores .vs { opacity: 0.5; }
+
+.verdict-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+.verdict-actions .mode-btn { padding: 1rem 1.5rem; }
+
+.verdict-quickpick {
+  margin-top: 0.5rem;
+}
+.verdict-quickpick-label {
+  font-family: 'Orbitron', sans-serif;
+  color: var(--neon-gold);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.6rem;
+}
+
+.verdict-game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.6rem;
+  max-width: 700px;
+  margin: 0 auto;
+}
+.verdict-game-btn {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 0.6rem 0.75rem;
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+.verdict-game-btn:hover {
+  border-color: var(--neon-gold);
+  background: rgba(255,211,0,0.08);
+  transform: translateY(-2px);
+}
+
+/* ── Game Instructions Overlay ───────────────────────────── */
+.instr-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 40%, rgba(11,12,21,0.92), rgba(6,6,12,0.98));
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding: 2rem;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.instr-card {
+  width: min(680px, 95vw);
+  max-height: 85vh;
+  overflow-y: auto;
+  background: rgba(21,23,37,0.85);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 24px;
+  padding: 2rem 2.25rem;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+}
+.instr-card::-webkit-scrollbar { width: 6px; }
+.instr-card::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+
+.instr-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.instr-icon {
+  font-size: 2rem;
+  width: 52px; height: 52px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.instr-title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--neon-gold);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.instr-section {
+  margin-bottom: 1.25rem;
+}
+.instr-section h3 {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--neon-blue);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.6rem;
+}
+.instr-section p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+}
+.instr-section p b { color: var(--neon-gold); }
+
+.instr-example {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  padding: 1rem 1.25rem;
+  margin: 0.6rem 0;
+}
+.instr-example .ex-label {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--neon-gold);
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+.instr-example .ex-content {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--text);
+}
+.instr-example .ex-content .correct { color: var(--neon-green); font-weight: 700; }
+.instr-example .ex-content .wrong { color: var(--neon-red); font-weight: 700; }
+
+.instr-controls-row {
+  display: flex;
+  gap: 1rem;
+  margin: 0.75rem 0;
+}
+.instr-ctrl {
+  flex: 1;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 12px;
+  padding: 0.85rem;
+  text-align: center;
+}
+.instr-ctrl .ctrl-side {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4rem;
+}
+.instr-ctrl .ctrl-side.red { color: var(--neon-red); }
+.instr-ctrl .ctrl-side.blue { color: var(--neon-blue); }
+.instr-ctrl .ctrl-keys {
+  font-size: 0.85rem;
+  color: var(--text);
+  line-height: 1.4;
+}
+.instr-ctrl .ctrl-keys kbd {
+  display: inline-block;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 4px;
+  padding: 0.1rem 0.4rem;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.75rem;
+  margin: 0 0.1rem;
+}
+
+.instr-start-btn {
+  display: block;
+  width: 100%;
+  padding: 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255,211,0,0.5);
+  background: rgba(255,211,0,0.12);
+  color: var(--neon-gold);
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 1rem;
+}
+.instr-start-btn:hover, .instr-start-btn:active {
+  background: rgba(255,211,0,0.2);
+  border-color: var(--neon-gold);
+  box-shadow: 0 0 24px rgba(255,211,0,0.3);
+}
+
+/* Mute button */
+.sfx-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 200;
+  background: rgba(21,23,37,0.7);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 10px;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  transition: border-color 0.15s;
+}
+.sfx-toggle:hover { border-color: var(--neon-gold); }
 
 .locked { opacity: 0.35; transform: scale(0.98); pointer-events: none; }
 
