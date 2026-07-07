@@ -80,7 +80,8 @@
 <section class="screen active" id="introScreen">
   <div class="pad">
     <div class="crest">🔨</div><div class="kick">Case 02 of the Bar Games</div>
-    <h1>Objection!</h1>
+    <img src="tbn-logo.png" alt="The Boost Nation" style="width:60px;height:60px;border-radius:12px;display:block;margin:0 auto 1rem;box-shadow:0 0 20px rgba(255,211,0,0.3);" />
+      <h1>Objection!</h1>
     <p class="lede">Watch the court. The instant <b>“OBJECTION!”</b> flashes, be the first to buzz. But hold your nerve — buzz too early, or fall for a <b style="color:var(--blue)">“SUSTAINED”</b> fake-out, and the point goes to your rival.</p>
     <div class="rules">
       <div class="rule"><div class="rt">🔴 Left Player</div><div class="rd">Buzz with <b>A</b> or tap the <b>left</b> side</div></div>
@@ -138,5 +139,8 @@ document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if($('gameSc
 $('halfL').addEventListener('pointerdown',e=>{e.preventDefault();buzz('L');});
 $('halfR').addEventListener('pointerdown',e=>{e.preventDefault();buzz('R');});
 </script>
+  <div class="tbn-footer" style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:0.5rem 1rem;font-size:0.7rem;color:var(--muted,#8a8fbf);background:rgba(7,6,15,0.85);border-top:1px solid rgba(255,255,255,0.08);z-index:100;letter-spacing:0.03em;">
+    Courtesy of Bar Mary · Powered by <strong style="color:var(--gold,#ffd300);font-weight:700;">The Boost Nation</strong>
+  </div>
 </body>
 </html>

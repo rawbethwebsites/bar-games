@@ -52,6 +52,35 @@ body::before {
 
 .screen.active { display: flex; }
 
+/* TBN Logo */
+.tbn-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  margin: 0 auto 1.5rem;
+  display: block;
+  box-shadow: 0 0 30px rgba(255, 211, 0, 0.3);
+  object-fit: cover;
+}
+
+/* Footer */
+.tbn-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  text-align: center;
+  padding: 0.6rem 1rem;
+  font-size: 0.75rem;
+  color: var(--muted);
+  background: rgba(11, 12, 21, 0.85);
+  border-top: 1px solid var(--border);
+  z-index: 100;
+  letter-spacing: 0.03em;
+}
+.tbn-footer strong { color: var(--neon-gold); font-weight: 700; }
+.footer-dot { margin: 0 0.4rem; opacity: 0.5; }
+
 .arcade-card {
   position: relative;
   width: min(900px, 95vw);

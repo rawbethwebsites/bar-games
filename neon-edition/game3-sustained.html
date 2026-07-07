@@ -81,7 +81,8 @@
 <section class="screen active" id="introScreen">
   <div class="pad">
     <div class="crest">📜</div><div class="kick">Case 03 of the Bar Games</div>
-    <h1>Sustained</h1>
+    <img src="tbn-logo.png" alt="The Boost Nation" style="width:60px;height:60px;border-radius:12px;display:block;margin:0 auto 1rem;box-shadow:0 0 20px rgba(255,211,0,0.3);" />
+      <h1>Sustained</h1>
     <p class="lede">Same question, both sides. Pick the right answer faster than your rival. First correct answer takes 2 points, second correct still grabs 1 — but a wrong answer locks you out of the round.</p>
     <div class="rules">
       <div class="rule"><div class="rt">🔴 Left Player</div><div class="rd">Keys <b>Q W</b> / <b>A S</b> — 2×2 layout</div></div>
@@ -154,5 +155,8 @@ function resolve(){if(resolving)return;resolving=true;clearInterval(timer);$('qF
 function endMatch(){$('fsL').textContent=scoreL;$('fsR').textContent=scoreR;let t,f;if(scoreL>scoreR){t='🔴 The Prosecution Wins';f='Sharp, swift, and sustained. The court is impressed.';}else if(scoreR>scoreL){t='🔵 The Defence Wins';f='Encyclopaedic and quick. A commanding examination.';}else{t='A Dead Heat!';f='Neither side yields. The scholars are evenly matched.';}$('winTitle').textContent=t;$('winFlavour').textContent=f;show('winScreen');}
 document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if($('gameScreen').classList.contains('active')){if(k in LKEYS)pick('L',LKEYS[k]);else if(k in RKEYS)pick('R',RKEYS[k]);}if(k==='enter'&&($('winScreen').classList.contains('active')||$('introScreen').classList.contains('active')))startMatch();});
 </script>
+  <div class="tbn-footer" style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:0.5rem 1rem;font-size:0.7rem;color:var(--muted,#8a8fbf);background:rgba(7,6,15,0.85);border-top:1px solid rgba(255,255,255,0.08);z-index:100;letter-spacing:0.03em;">
+    Courtesy of Bar Mary · Powered by <strong style="color:var(--gold,#ffd300);font-weight:700;">The Boost Nation</strong>
+  </div>
 </body>
 </html>

@@ -75,7 +75,8 @@
 <section class="screen active" id="introScreen">
   <div class="pad">
     <div class="crest">⏱️</div><div class="kick">Case 05 of the Bar Games</div>
-    <h1>Beat the Gavel</h1>
+    <img src="tbn-logo.png" alt="The Boost Nation" style="width:60px;height:60px;border-radius:12px;display:block;margin:0 auto 1rem;box-shadow:0 0 20px rgba(255,211,0,0.3);" />
+      <h1>Beat the Gavel</h1>
     <p class="lede">The verdict needle sweeps between GUILTY and NOT GUILTY. Stop it in the shrinking green zone. Each round the target narrows and the needle speeds up. Most clean stops after five rounds wins.</p>
     <div class="rules">
       <div class="rule"><div class="rt">🔴 Left Player</div><div class="rd">Stop with <b>A</b> or click your meter</div></div>
@@ -142,5 +143,8 @@ document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if($('gameSc
 $('meterL').addEventListener('pointerdown',()=>stopCore('L'));$('btnL').addEventListener('pointerdown',()=>stopCore('L'));
 $('meterR').addEventListener('pointerdown',()=>stopCore('R'));$('btnR').addEventListener('pointerdown',()=>stopCore('R'));
 </script>
+  <div class="tbn-footer" style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:0.5rem 1rem;font-size:0.7rem;color:var(--muted,#8a8fbf);background:rgba(7,6,15,0.85);border-top:1px solid rgba(255,255,255,0.08);z-index:100;letter-spacing:0.03em;">
+    Courtesy of Bar Mary · Powered by <strong style="color:var(--gold,#ffd300);font-weight:700;">The Boost Nation</strong>
+  </div>
 </body>
 </html>

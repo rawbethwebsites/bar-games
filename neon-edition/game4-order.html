@@ -86,7 +86,8 @@
 <section class="screen active" id="introScreen">
   <div class="pad">
     <div class="crest">🎭</div><div class="kick">Case 04 of the Bar Games</div>
-    <h1>Order in the Court</h1>
+    <img src="tbn-logo.png" alt="The Boost Nation" style="width:60px;height:60px;border-radius:12px;display:block;margin:0 auto 1rem;box-shadow:0 0 20px rgba(255,211,0,0.3);" />
+      <h1>Order in the Court</h1>
     <p class="lede">A ridiculous courtroom sentence needs finishing. Each player is dealt four options — pick the funniest. Then the room decides whose answer wins the point. Pure mischief, no law required.</p>
     <div class="rules">
       <div class="rule"><div class="rt">🔴 Left Player</div><div class="rd">Choose with <b>Q W A S</b> or click your cards</div></div>
@@ -161,5 +162,8 @@ function endMatch(){$('fsL').textContent=scoreL;$('fsR').textContent=scoreR;let 
 document.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if($('gameScreen').classList.contains('active')){if(phase==='pick'){if(k in LKEYS)pick('L',LKEYS[k]);else if(k in RKEYS)pick('R',RKEYS[k]);}else if(phase==='vote'){if(e.key==='ArrowLeft')castVote('L');else if(e.key==='ArrowRight')castVote('R');}}if(k==='enter'&&($('winScreen').classList.contains('active')||$('introScreen').classList.contains('active')))startMatch();});
 $('pickL').addEventListener('click',()=>castVote('L'));$('pickR').addEventListener('click',()=>castVote('R'));
 </script>
+  <div class="tbn-footer" style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:0.5rem 1rem;font-size:0.7rem;color:var(--muted,#8a8fbf);background:rgba(7,6,15,0.85);border-top:1px solid rgba(255,255,255,0.08);z-index:100;letter-spacing:0.03em;">
+    Courtesy of Bar Mary · Powered by <strong style="color:var(--gold,#ffd300);font-weight:700;">The Boost Nation</strong>
+  </div>
 </body>
 </html>
