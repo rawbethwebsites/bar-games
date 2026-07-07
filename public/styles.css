@@ -872,7 +872,7 @@ body::before { display: none; }   /* replaced by .fx layer */
 /* Room code display on game screen */
 .room-display {
   position: absolute;
-  top: 3.5rem;
+  top: 5.5rem;
   left: 50%;
   transform: translateX(-50%);
   font-family: 'Orbitron', sans-serif;

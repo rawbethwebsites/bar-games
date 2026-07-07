@@ -1,5 +1,5 @@
 function createCrossGame(app) {
-  const MAX = 10, QTIME = 8;
+  const MAX = 10, QTIME = 12;
   const stage = document.getElementById('game-stage');
   let bank = [], deck = [], round = 0, cur = null;
   let ans = { red: null, blue: null }, timer = null, resolving = false;
