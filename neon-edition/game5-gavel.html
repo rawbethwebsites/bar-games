@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Beat the Gavel — Neon Edition</title>
+<link rel="icon" type="image/png" href="tbn-logo.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;900&family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -146,5 +147,36 @@ $('meterR').addEventListener('pointerdown',()=>stopCore('R'));$('btnR').addEvent
   <div class="tbn-footer" style="position:fixed;bottom:0;left:0;right:0;text-align:center;padding:0.5rem 1rem;font-size:0.7rem;color:var(--muted,#8a8fbf);background:rgba(7,6,15,0.85);border-top:1px solid rgba(255,255,255,0.08);z-index:100;letter-spacing:0.03em;">
     Courtesy of Bar Mary · Powered by <strong style="color:var(--gold,#ffd300);font-weight:700;">The Boost Nation</strong>
   </div>
+<script>
+(function() {
+  var favicon1 = document.querySelector('link[rel="icon"]');
+  var href1 = favicon1 ? favicon1.href : '';
+  // Create inverted version dynamically
+  var canvas = document.createElement('canvas');
+  canvas.width = 64; canvas.height = 64;
+  var ctx = canvas.getContext('2d');
+  var img = new Image();
+  img.crossOrigin = 'anonymous';
+  img.onload = function() {
+    ctx.drawImage(img, 0, 0, 64, 64);
+    var data = ctx.getImageData(0, 0, 64, 64);
+    for (var i = 0; i < data.data.length; i += 4) {
+      data.data[i] = 255 - data.data[i];
+      data.data[i+1] = 255 - data.data[i+1];
+      data.data[i+2] = 255 - data.data[i+2];
+    }
+    ctx.putImageData(data, 0, 0);
+    var inverted = canvas.toDataURL();
+    
+    var toggle = false;
+    setInterval(function() {
+      toggle = !toggle;
+      var link = document.querySelector('link[rel="icon"]');
+      if (link) link.href = toggle ? inverted : href1;
+    }, 800);
+  };
+  img.src = href1;
+})();
+</script>
 </body>
 </html>
