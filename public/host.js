@@ -69,6 +69,12 @@ function showVerdict(winner, callback) {
     return tourneyRoundEnd(winner);
   }
   const stage = document.getElementById('game-stage');
+
+  // Build mini game grid for quick switching
+  const gameButtons = Object.entries(GAME_META).map(([key, meta]) =>
+    `<button class="verdict-game-btn" data-game="${key}">${meta.icon} ${meta.title}</button>`
+  ).join('');
+
   stage.innerHTML = `
     <div class="winner-screen">
       <h2>Verdict!</h2>
@@ -78,15 +84,27 @@ function showVerdict(winner, callback) {
       </div>
       <div class="mode-select" style="margin-top:1rem;justify-content:center;">
         <button class="mode-btn" id="rematch-btn">Rematch</button>
-        <button class="mode-btn back-to-lobby">Back to Menu</button>
         <button class="mode-btn" id="home-btn">Homepage</button>
+      </div>
+      <div style="margin-top:2rem;">
+        <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.85rem;letter-spacing:0.1em;margin-bottom:0.75rem;">⚡ QUICK PICK NEXT GAME</div>
+        <div class="verdict-game-grid">${gameButtons}</div>
       </div>
     </div>
   `;
 
   document.getElementById('rematch-btn').onclick = () => callback('rematch');
-  document.querySelector('.back-to-lobby').onclick = () => callback('menu');
   document.getElementById('home-btn').onclick = () => showScreen('home');
+
+  // Wire up quick-pick game buttons
+  stage.querySelectorAll('.verdict-game-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const gameKey = btn.dataset.game;
+      if (GAME_FACTORIES[gameKey]) {
+        launchGame(gameKey);
+      }
+    });
+  });
 }
 
 function renderLeaderboard(container) {
@@ -138,6 +156,11 @@ function initPeer() {
       } else if (msg.type === 'player-action') {
         if (App.activeGame && App.activeGame.onPhoneAction) {
           App.activeGame.onPhoneAction(msg.action, msg.side);
+        }
+      } else if (msg.type === 'get-controls') {
+        // Phone is polling for current controls — reply with current scheme
+        if (App.currentControls && conn.open) {
+          conn.send({ type: 'controls', scheme: App.currentControls.scheme, title: App.currentControls.title });
         }
       }
     });
@@ -255,6 +278,9 @@ function showPhoneLobby(fullPeerId, code) {
     resetScores();
     showScreen('lobby');
   };
+  // Set room code on game screen
+  const roomDisplay = document.getElementById('room-display');
+  if (roomDisplay) roomDisplay.textContent = `Courtroom: ${code}`;
   showScreen('phone-lobby');
 }
 

@@ -842,3 +842,45 @@ body::before { display: none; }   /* replaced by .fx layer */
 .game-card:hover { border-color: var(--c, var(--neon-gold)) !important; box-shadow: 0 20px 46px rgba(0,0,0,0.5), 0 0 26px -6px var(--c, #05d9e8) !important; transform: translateY(-5px); }
 .game-card h3 { color: var(--c, #fff); }
 .game-card p { color: var(--muted); }
+
+/* Verdict screen quick-pick game grid */
+.verdict-game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+.verdict-game-btn {
+  background: rgba(21,23,37,0.7);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--text);
+  padding: 0.7rem 1rem;
+  border-radius: 12px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: left;
+}
+.verdict-game-btn:hover {
+  border-color: var(--neon-gold);
+  box-shadow: 0 0 16px -4px var(--neon-gold);
+  transform: translateY(-2px);
+}
+
+/* Room code display on game screen */
+.room-display {
+  position: absolute;
+  top: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  color: var(--neon-gold);
+  text-transform: uppercase;
+  opacity: 0.7;
+  z-index: 5;
+  pointer-events: none;
+}

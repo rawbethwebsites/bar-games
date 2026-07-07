@@ -260,6 +260,7 @@
       let peer = null;
       let joined = false;
       let retryTimer = null;
+      let pollTimer = null;
 
       function connectToHost() {
         peer = new Peer();
@@ -286,6 +287,10 @@
               document.getElementById('connecting').style.display = 'none';
               document.getElementById('game-panel').style.display = 'flex';
               document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
+              // Start polling for controls as a backup to push
+              pollTimer = setInterval(() => {
+                if (conn && conn.open) conn.send({ type: 'get-controls' });
+              }, 2000);
             } else if (payload && payload.type === 'error') {
               if (retryTimer) clearInterval(retryTimer);
               document.getElementById('connecting').style.display = 'none';
@@ -308,6 +313,7 @@
 
           conn.on('close', () => {
             if (retryTimer) clearInterval(retryTimer);
+            if (pollTimer) clearInterval(pollTimer);
             document.getElementById('game-panel').style.display = 'none';
             document.getElementById('join-panel').style.display = 'block';
             document.getElementById('err-msg').textContent = 'Host disconnected.';
@@ -316,6 +322,7 @@
 
           conn.on('error', () => {
             if (retryTimer) clearInterval(retryTimer);
+            if (pollTimer) clearInterval(pollTimer);
             document.getElementById('connecting').style.display = 'none';
             document.getElementById('join-panel').style.display = 'block';
             document.getElementById('err-msg').textContent = 'Connection failed. Try again.';
