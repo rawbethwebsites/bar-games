@@ -1,0 +1,18 @@
+[
+  { "motion": "Defence asks to show the defendant's good character.", "sustained": true, "reason": "Relevant to credibility." },
+  { "motion": "Prosecution wants to introduce hearsay from a stranger.", "sustained": false, "reason": "Hearsay is generally inadmissible." },
+  { "motion": "Defence objects: witness was never disclosed before trial.", "sustained": true, "reason": "Surprise witnesses unfair." },
+  { "motion": "Prosecution seeks to show a ten-year-old parking ticket.", "sustained": false, "reason": "Irrelevant and prejudicial." },
+  { "motion": "Defence wants the jury to visit the crime scene at midnight.", "sustained": false, "reason": "Impractical and theatrical." },
+  { "motion": "Prosecution offers a properly authenticated document.", "sustained": true, "reason": "Authentic evidence is admissible." },
+  { "motion": "Defence objects because the officer read the witness's diary aloud.", "sustained": true, "reason": "Privacy violation without warrant." },
+  { "motion": "Prosecution wants to play a video with no chain of custody.", "sustained": false, "reason": "Cannot verify authenticity." },
+  { "motion": "Defence asks to mention the alleged victim's unrelated lawsuit.", "sustained": false, "reason": "Prejudicial and irrelevant." },
+  { "motion": "Prosecution calls an expert with recognised qualifications.", "sustained": true, "reason": "Expert testimony allowed." },
+  { "motion": "Defence objects to a leading question on direct examination.", "sustained": true, "reason": "Leading questions improper on direct." },
+  { "motion": "Prosecution wants to introduce a confession obtained without caution.", "sustained": false, "reason": "Involuntary confession excluded." },
+  { "motion": "Defence asks to show the jury a cute dog photo unrelated to the case.", "sustained": false, "reason": "Irrelevant and distracting." },
+  { "motion": "Prosecution offers DNA from a verified lab.", "sustained": true, "reason": "Reliable scientific evidence." },
+  { "motion": "Defence objects: prosecutor is making arguments during questioning.", "sustained": true, "reason": "Argumentative questioning not allowed." },
+  { "motion": "Prosecution wants to mention the defendant's previous acquittal.", "sustained": false, "reason": "Prior acquittal cannot be used against them." }
+]

@@ -1,0 +1,14 @@
+[
+  { "case": "Held overnight for a broken tail-light.", "free": true, "reason": "Minor traffic issue, no danger." },
+  { "case": "Accused of armed robbery, caught fleeing scene.", "free": false, "reason": "Serious felony with flight risk." },
+  { "case": "Elderly witness forgot court date.", "free": true, "reason": "Non-violent, attendance issue only." },
+  { "case": "Repeat shoplifter with three prior convictions.", "free": false, "reason": "Pattern of offending." },
+  { "case": "Student arrested at a peaceful protest.", "free": true, "reason": "Peaceful assembly, no violence." },
+  { "case": "Suspected fraud, passport seized, no ties abroad.", "free": true, "reason": "No flight risk, passport held." },
+  { "case": "Domestic assault, victim afraid to return home.", "free": false, "reason": "Risk to victim." },
+  { "case": "Unpaid parking tickets only.", "free": true, "reason": "Debt, not a threat." },
+  { "case": "Caught with a small amount of a banned substance, first offence.", "free": true, "reason": "Minor, first-time, non-violent." },
+  { "case": "Alleged kidnapping, large sum of cash found.", "free": false, "reason": "Serious charge plus evidence of flight risk." },
+  { "case": "Contempt of court for yawning loudly.", "free": true, "reason": "Contempt can be fined, not jailed." },
+  { "case": "Accused of arson with prior fire-related charges.", "free": false, "reason": "Repeat serious danger." }
+]

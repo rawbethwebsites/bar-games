@@ -1,0 +1,14 @@
+[
+  { "juror": "Retired teacher, reads newspapers daily", "bias": "pro-defence", "clue": "Skeptical of prosecutors." },
+  { "juror": "Former police officer", "bias": "pro-prosecution", "clue": "Trusts the system." },
+  { "juror": "Young accountant, loves spreadsheets", "bias": "pro-prosecution", "clue": "Wants hard evidence." },
+  { "juror": "Activist who posts about wrongful convictions", "bias": "pro-defence", "clue": "Distrusts convictions." },
+  { "juror": "Parent of three, very protective", "bias": "pro-prosecution", "clue": "Worries about public safety." },
+  { "juror": "Comedian, makes jokes during recess", "bias": "pro-defence", "clue": "Dislikes authority." },
+  { "juror": "Estate agent, smooth talker", "bias": "swing", "clue": "Easily persuaded by charisma." },
+  { "juror": "Nurse, sees people at their worst", "bias": "pro-defence", "clue": "Believes in second chances." },
+  { "juror": "Retired soldier, values discipline", "bias": "pro-prosecution", "clue": "Respects rules and order." },
+  { "juror": "Uni student, studies criminology", "bias": "swing", "clue": "Wants to appear impartial." },
+  { "juror": "Chef, opinionated about everything", "bias": "pro-defence", "clue": "Argues with everyone." },
+  { "juror": "Bank manager, risk-averse", "bias": "pro-prosecution", "clue": "Punishes rule-breakers." }
+]

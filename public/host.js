@@ -177,6 +177,11 @@ document.querySelectorAll('[data-mode]').forEach(btn => {
 
 // Game factory registry
 const GAME_FACTORIES = {
+  cross: typeof createCrossGame === 'function' ? createCrossGame : null,
+  habeas: typeof createHabeasGame === 'function' ? createHabeasGame : null,
+  closing: typeof createClosingGame === 'function' ? createClosingGame : null,
+  voir: typeof createVoirGame === 'function' ? createVoirGame : null,
+  overruled: typeof createOverruledGame === 'function' ? createOverruledGame : null,
   guilty: typeof createGuiltyGame === 'function' ? createGuiltyGame : null,
   objection: typeof createObjectionGame === 'function' ? createObjectionGame : null,
   sustained: typeof createSustainedGame === 'function' ? createSustainedGame : null,
@@ -184,15 +189,19 @@ const GAME_FACTORIES = {
   gavel: typeof createGavelGame === 'function' ? createGavelGame : null,
 };
 
-// Per-game metadata + phone control scheme
 const GAME_META = {
-  guilty:    { title: 'Guilty or Not Guilty', icon: '⚖', controls: 'realfake' },
-  objection: { title: 'Objection!',           icon: '🗣', controls: 'buzz' },
-  sustained: { title: 'Sustained',            icon: '❓', controls: 'abcd' },
-  order:     { title: 'Order in the Court',    icon: '🤣', controls: 'abcd' },
-  gavel:     { title: 'Beat the Gavel',        icon: '🔨', controls: 'buzz' },
+  cross:    { title: 'Cross Examination', icon: '🔦', controls: 'yesno' },
+  habeas:   { title: 'Habeas Corpus',   icon: '🔓', controls: 'freedetain' },
+  closing:  { title: 'Closing Argument',icon: '🎤', controls: 'abcd' },
+  voir:     { title: 'Voir Dire',       icon: '🧑‍⚖️', controls: 'cycle' },
+  overruled:{ title: 'Overruled!',      icon: '🧑‍⚖️', controls: 'sustainoverrule' },
+  guilty:   { title: 'Guilty or Not Guilty', icon: '⚖', controls: 'realfake' },
+  objection:{ title: 'Objection!',      icon: '🗣', controls: 'buzz' },
+  sustained:{ title: 'Sustained',       icon: '❓', controls: 'abcd' },
+  order:    { title: 'Order in the Court', icon: '🤣', controls: 'abcd' },
+  gavel:    { title: 'Beat the Gavel',  icon: '🔨', controls: 'buzz' },
 };
-const TOURNEY_ORDER = ['guilty', 'objection', 'sustained', 'order', 'gavel'];
+const TOURNEY_ORDER = ['guilty', 'objection', 'sustained', 'order', 'gavel', 'cross', 'habeas', 'closing', 'voir', 'overruled'];
 
 App.currentControls = null;   // { scheme, title }
 App.tournament = null;

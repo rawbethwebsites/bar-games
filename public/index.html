@@ -125,6 +125,31 @@
       </div>
 
       <div class="game-grid">
+        <button class="game-card" data-game="cross">
+          <span class="game-icon">🔦</span>
+          <h3>CROSS EXAMINATION</h3>
+          <p>Yes or no on witness facts.</p>
+        </button>
+        <button class="game-card" data-game="habeas">
+          <span class="game-icon">🔓</span>
+          <h3>HABEAS CORPUS</h3>
+          <p>Free or detain each case.</p>
+        </button>
+        <button class="game-card" data-game="closing">
+          <span class="game-icon">🎤</span>
+          <h3>CLOSING ARGUMENT</h3>
+          <p>Build the best line, room votes.</p>
+        </button>
+        <button class="game-card" data-game="voir">
+          <span class="game-icon">🧑‍⚖️</span>
+          <h3>VOIR DIRE</h3>
+          <p>Pick the best juror.</p>
+        </button>
+        <button class="game-card" data-game="overruled">
+          <span class="game-icon">🧑‍⚖️</span>
+          <h3>OVERRULED!</h3>
+          <p>Sustained or overruled?</p>
+        </button>
         <button class="game-card" data-game="guilty">
           <span class="game-icon">⚖</span>
           <h3>GUILTY OR NOT GUILTY</h3>
@@ -153,7 +178,7 @@
         <button class="game-card tournament" data-game="tournament">
           <span class="game-icon">🏆</span>
           <h3>TOURNAMENT</h3>
-          <p>Play all five. Crown the Silk.</p>
+          <p>Play all ten. Crown the Silk.</p>
         </button>
       </div>
     </section>
@@ -202,6 +227,11 @@
 
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="games/cross.js"></script>
+  <script src="games/habeas.js"></script>
+  <script src="games/closing.js"></script>
+  <script src="games/voir.js"></script>
+  <script src="games/overruled.js"></script>
   <script src="games/guilty.js"></script>
   <script src="games/objection.js"></script>
   <script src="games/sustained.js"></script>

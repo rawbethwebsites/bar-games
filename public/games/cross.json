@@ -1,0 +1,18 @@
+[
+  { "witness": "Ms. Bola, the baker", "text": "I was in the shop from 6 a.m. to noon.", "q": "Was she at the shop in the afternoon?", "yes": false },
+  { "witness": "Mr. Edumoh, the neighbour", "text": "I heard shouting, then a door slam.", "q": "Did he see the actual fight?", "yes": false },
+  { "witness": "Officer Akin", "text": "The car was parked two blocks away.", "q": "Was the car found near the scene?", "yes": false },
+  { "witness": "Dr. Nkechi", "text": "The injury was at least three hours old.", "q": "Was the injury fresh?", "yes": false },
+  { "witness": "Ms. Zara, the cashier", "text": "The defendant bought a drink at 9:15 p.m.", "q": "Was the defendant in the store that night?", "yes": true },
+  { "witness": "Mr. Tunde, the doorman", "text": "I did not see anyone enter after midnight.", "q": "Did he see someone enter after midnight?", "yes": false },
+  { "witness": "Forensic analyst", "text": "No fingerprints matched the defendant.", "q": "Did the fingerprints match the defendant?", "yes": false },
+  { "witness": "Ms. Amara", "text": "The lights were off when I walked past.", "q": "Were the lights on?", "yes": false },
+  { "witness": "Mr. Kola", "text": "The package was delivered on Tuesday.", "q": "Was the package delivered on Tuesday?", "yes": true },
+  { "witness": "Detective Halima", "text": "The suspect refused to answer questions.", "q": "Did the suspect answer all questions?", "yes": false },
+  { "witness": "Ms. Ireti", "text": "I saw two people arguing by the gate.", "q": "Did she see two people arguing?", "yes": true },
+  { "witness": "Mr. Obi", "text": "The phone was found under the sofa.", "q": "Was the phone found on the table?", "yes": false },
+  { "witness": "Pathologist", "text": "Cause of death was blunt force trauma.", "q": "Was the cause a fall?", "yes": false },
+  { "witness": "Ms. Yemi", "text": "The contract was signed in blue ink.", "q": "Was the contract signed in blue ink?", "yes": true },
+  { "witness": "Security guard", "text": "The alarm triggered at 2:07 a.m.", "q": "Did the alarm trigger after 3 a.m.?", "yes": false },
+  { "witness": "Ms. Fadeke", "text": "The defendant left before the toast.", "q": "Did the defendant stay for the toast?", "yes": false }
+]
