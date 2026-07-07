@@ -268,15 +268,24 @@
         peer.on('open', () => {
           conn = peer.connect(hostId, { reliable: true });
 
+          // Send join message as soon as we have the connection object,
+          // and retry every 500ms until the host confirms.
+          // Don't wait for conn.on('open') — on some browsers/networks
+          // the data event can fire before 'open' is emitted.
+          function sendJoin() {
+            if (!joined && conn) {
+              conn.send({ type: 'join', side });
+            }
+          }
+
+          // Start retrying immediately — PeerJS will queue the message
+          // until the connection is actually open.
+          retryTimer = setInterval(sendJoin, 500);
+          sendJoin(); // send immediately
+
           conn.on('open', () => {
-            // Send join message
-            conn.send({ type: 'join', side });
-            // Retry sending join every 500ms until host confirms
-            retryTimer = setInterval(() => {
-              if (!joined && conn && conn.open) {
-                conn.send({ type: 'join', side });
-              }
-            }, 500);
+            // Connection is open — send join now if we haven't already
+            sendJoin();
           });
 
           conn.on('data', (payload) => {

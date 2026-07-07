@@ -148,7 +148,12 @@ function initPeer() {
         // Check if the side is already taken by a live connection
         const existing = App.connections[side];
         if (existing) {
-          // If the old connection is still open, reject the new join
+          // Same connection retrying — re-send confirmation, don't reject
+          if (existing === conn) {
+            if (conn.open) conn.send({ type: 'joined', side });
+            return;
+          }
+          // Different connection — if the old one is still alive, reject
           if (existing.open && !existing.dead) {
             if (conn.open) conn.send({ type: 'error', error: 'Side taken' });
             return;
@@ -161,6 +166,7 @@ function initPeer() {
         conn.lastSeen = Date.now();
         // Send confirmation back to the phone
         if (conn.open) conn.send({ type: 'joined', side });
+        // If conn isn't open yet, the phone will retry and we'll catch it above
         onPlayerJoined(side);
       } else if (msg.type === 'player-action') {
         if (App.activeGame && App.activeGame.onPhoneAction) {
