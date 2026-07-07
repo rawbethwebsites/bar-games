@@ -122,40 +122,44 @@ function initPeer() {
   });
 
   App.peer.on('connection', (conn) => {
+    // Attach data listener immediately — don't wait for 'open',
+    // otherwise messages that arrive early get dropped.
+    conn.on('data', (msg) => {
+      if (msg.type === 'join') {
+        const side = msg.side;
+        if (App.connections[side]) {
+          if (conn.open) conn.send({ type: 'error', error: 'Side taken' });
+          return;
+        }
+        App.connections[side] = conn;
+        onPlayerJoined(side);
+      } else if (msg.type === 'player-action') {
+        if (App.activeGame && App.activeGame.onPhoneAction) {
+          App.activeGame.onPhoneAction(msg.action, msg.side);
+        }
+      }
+    });
+
     conn.on('open', () => {
-      conn.on('data', (msg) => {
-        if (msg.type === 'join') {
-          const side = msg.side;
-          if (App.connections[side]) {
-            conn.send({ type: 'error', error: 'Side taken' });
-            return;
-          }
-          App.connections[side] = conn;
-          onPlayerJoined(side);
-        } else if (msg.type === 'player-action') {
-          if (App.activeGame && App.activeGame.onPhoneAction) {
-            App.activeGame.onPhoneAction(msg.action, msg.side);
-          }
-        }
-      });
+      // Connection ready — nothing to do, data listener already attached
+    });
 
-      conn.on('close', () => {
-        for (const s of ['red', 'blue']) {
-          if (App.connections[s] === conn) {
-            delete App.connections[s];
-            onPlayerLeft(s);
-          }
+    conn.on('close', () => {
+      for (const s of ['red', 'blue']) {
+        if (App.connections[s] === conn) {
+          delete App.connections[s];
+          onPlayerLeft(s);
         }
-      });
+      }
+    });
 
-      conn.on('error', () => {
-        for (const s of ['red', 'blue']) {
-          if (App.connections[s] === conn) {
-            delete App.connections[s];
-            onPlayerLeft(s);
-          }
+    conn.on('error', () => {
+      for (const s of ['red', 'blue']) {
+        if (App.connections[s] === conn) {
+          delete App.connections[s];
+          onPlayerLeft(s);
         }
-      });
+      }
     });
   });
 

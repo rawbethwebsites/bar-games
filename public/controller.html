@@ -267,9 +267,20 @@
           document.getElementById('connecting').style.display = 'none';
           document.getElementById('game-panel').style.display = 'flex';
           document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
-          // Tell host we joined
+          // Tell host we joined — send it now that the data channel is open
           conn.send({ type: 'join', side });
         });
+
+        // Fallback: if 'open' doesn't fire within 3s but connection exists,
+        // try sending the join message anyway
+        setTimeout(() => {
+          if (conn && conn.open && !document.getElementById('game-panel').style.display.includes('flex')) {
+            document.getElementById('connecting').style.display = 'none';
+            document.getElementById('game-panel').style.display = 'flex';
+            document.getElementById('status').textContent = `Connected as ${side === 'red' ? 'PROSECUTION' : 'DEFENCE'}`;
+            conn.send({ type: 'join', side });
+          }
+        }, 3000);
 
         conn.on('data', (payload) => {
           if (payload && payload.type === 'controls') renderControls(payload.scheme, payload.title);
