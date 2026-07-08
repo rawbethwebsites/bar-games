@@ -117,9 +117,14 @@ function showVerdict(winner, callback) {
     `<button class="verdict-game-btn" data-game="${key}">${meta.icon} ${meta.title}</button>`
   ).join('');
 
+  // Get the game name that was just played
+  const justPlayed = App.selectedGame ? GAME_META[App.selectedGame] : null;
+  const justPlayedLabel = justPlayed ? `${justPlayed.icon} ${justPlayed.title}` : '';
+
   stage.innerHTML = `
     <div class="winner-screen">
       <h2>Verdict!</h2>
+      ${justPlayedLabel ? `<div class="round-label" style="margin-bottom:0.5rem;">${justPlayedLabel}</div>` : ''}
       <div class="winner-name ${winner}" style="margin-bottom:0.5rem;">${winner === 'draw' ? 'The Court is Tied' : (winner === 'red' ? 'Prosecution Wins' : 'Defence Wins')}</div>
       <div class="verdict-scores">
         <span style="color:var(--neon-red);font-weight:800;">Prosecution ${App.scores.red}</span>
@@ -431,6 +436,7 @@ function setControls(scheme, title) {
 function launchGame(key) {
   const factory = GAME_FACTORIES[key];
   if (!factory) return;
+  App.selectedGame = key;
   if (GAME_META[key]) setControls(GAME_META[key].controls, GAME_META[key].title);
   // Show the game screen first so the overlay is visible
   showScreen('game');
