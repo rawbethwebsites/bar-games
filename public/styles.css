@@ -45,9 +45,7 @@ body::before {
   display: none;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  padding-bottom: 3rem;
+  padding: 4rem 2rem 3rem;
   text-align: center;
   overflow-y: auto;
 }
@@ -88,9 +86,10 @@ body::before {
   width: min(900px, 95vw);
   background: var(--panel);
   border-radius: 28px;
-  padding: 3rem;
+  padding: 2.5rem;
   border: 1px solid var(--border);
   box-shadow: 0 0 60px rgba(255,42,109,0.08), 0 0 100px rgba(5,217,232,0.05);
+  margin: auto 0;
 }
 
 .arcade-title {
