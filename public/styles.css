@@ -86,7 +86,7 @@ body::before {
   width: min(900px, 95vw);
   background: var(--panel);
   border-radius: 28px;
-  padding: 2.5rem;
+  padding: 2rem;
   border: 1px solid var(--border);
   box-shadow: 0 0 60px rgba(255,42,109,0.08), 0 0 100px rgba(5,217,232,0.05);
   margin: auto 0;
