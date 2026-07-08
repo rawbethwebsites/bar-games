@@ -432,6 +432,8 @@ function launchGame(key) {
   const factory = GAME_FACTORIES[key];
   if (!factory) return;
   if (GAME_META[key]) setControls(GAME_META[key].controls, GAME_META[key].title);
+  // Show the game screen first so the overlay is visible
+  showScreen('game');
   // Show instructions overlay before starting the game
   showInstructions(key, () => {
     App.activeGame = factory(App);
