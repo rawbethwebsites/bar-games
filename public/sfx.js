@@ -179,6 +179,14 @@
     // Toggle mute
     toggleMute() { muted = !muted; return muted; },
     isMuted() { return muted; },
+
+    // Stop all sound immediately — used when leaving a game mid-play
+    stopAll() {
+      const a = ac(); if (!a) return;
+      // Close and recreate the context to kill any running oscillators
+      try { ctx.close(); } catch (e) {}
+      ctx = null;
+    },
   };
 
   window.SFX = SFX;

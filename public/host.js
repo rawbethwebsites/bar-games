@@ -87,10 +87,11 @@ function showScreen(id) {
 // Stop the active game — clear timers, remove overlays, null out the game
 function stopGame() {
   if (App.activeGame) {
-    // Call cleanup if the game provides it
     if (App.activeGame.cleanup) App.activeGame.cleanup();
     App.activeGame = null;
   }
+  // Stop all sounds
+  if (window.SFX) SFX.stopAll();
   // Remove any instructions overlay
   const overlay = document.querySelector('.instr-overlay');
   if (overlay) overlay.remove();
