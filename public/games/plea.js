@@ -96,7 +96,7 @@ function createPleaGame(app) {
 
   async function start() {
     if (!bank.length) await load();
-    deck = getUnusedItems(bank, 'plea', MAX);
+    deck = shuffleNoStreak(getUnusedItems(bank, 'plea', MAX), item => item.bestChoice === 'plea');
     round = 0; app.scores = { red: 0, blue: 0 };
     updateScoreBar(); setHint(); showScreen('game');
     startRound();

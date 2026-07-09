@@ -51,6 +51,28 @@ function getUnusedItems(bank, gameKey, count) {
   return picked;
 }
 
+// Shuffle a deck so no more than maxStreak of the same answer appear consecutively.
+// answerFn(item) returns true/false to classify items into two groups.
+function shuffleNoStreak(deck, answerFn, maxStreak = 2) {
+  const sh = (a) => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  let result = sh(deck);
+  // Check and fix streaks by swapping
+  for (let i = maxStreak; i < result.length; i++) {
+    let streak = 0;
+    for (let j = i - 1; j >= 0 && answerFn(result[j]) === answerFn(result[i - 1]); j--) streak++;
+    if (streak >= maxStreak && answerFn(result[i]) === answerFn(result[i - 1])) {
+      // Find a swap target further ahead with the opposite answer
+      for (let k = i + 1; k < result.length; k++) {
+        if (answerFn(result[k]) !== answerFn(result[i])) {
+          [result[i], result[k]] = [result[k], result[i]];
+          break;
+        }
+      }
+    }
+  }
+  return result;
+}
+
 function saveScores() {
   try {
     localStorage.setItem('bar-games-scores', JSON.stringify(App.scores));
@@ -60,6 +82,21 @@ function saveScores() {
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
+}
+
+// Stop the active game — clear timers, remove overlays, null out the game
+function stopGame() {
+  if (App.activeGame) {
+    // Call cleanup if the game provides it
+    if (App.activeGame.cleanup) App.activeGame.cleanup();
+    App.activeGame = null;
+  }
+  // Remove any instructions overlay
+  const overlay = document.querySelector('.instr-overlay');
+  if (overlay) overlay.remove();
+  // Clear the game stage
+  const stage = document.getElementById('game-stage');
+  if (stage) stage.innerHTML = '';
 }
 
 function updateScoreBar() {
@@ -418,7 +455,7 @@ const GAME_META = {
   order:    { title: 'Order in the Court', icon: '🤣', controls: 'abcd' },
   gavel:    { title: 'Beat the Gavel',  icon: '🔨', controls: 'buzz' },
   plea:     { title: 'Plea Bargain',    icon: '🤝', controls: 'realfake' },
-  discovery:{ title: 'Discovery Dispute', icon: '📋', controls: 'sustainoverrule' },
+  discovery:{ title: 'Discovery Dispute', icon: '📋', controls: 'complyobject' },
   summons:  { title: 'Summons Race',    icon: '📞', controls: 'abcd' },
   parole:   { title: 'Parole Hearing',  icon: '🚪', controls: 'freedetain' },
   contempt: { title: 'Contempt of Court', icon: '😤', controls: 'sustainoverrule' },

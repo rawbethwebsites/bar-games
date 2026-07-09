@@ -15,7 +15,7 @@ function createSummonsGame(app) {
 
   function setHint() {
     const h = document.querySelector('.controls-hint');
-    if (h) h.innerHTML = '<span><b>LEFT:</b> Q W A S</span><span><b>RIGHT:</b> U I J K</span>';
+    if (h) h.innerHTML = '<span><b>LEFT:</b> Q W A S</span><span><b>RIGHT: U I J K</span>';
   }
 
   function buildGrid(labels, side) {

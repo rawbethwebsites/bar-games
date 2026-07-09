@@ -227,11 +227,12 @@
         mkBtn('BUZZ', 'buzz', 'buzz-single ' + side, pad);
       } else if (scheme === 'abcd') {
         const grid = document.createElement('div'); grid.className = 'pad-grid'; pad.appendChild(grid);
-        ['A', 'B', 'C', 'D'].forEach(l => mkBtn(l, l.toLowerCase(), 'pad-btn ' + side, grid));
-      } else if (scheme === 'yesno' || scheme === 'freedetain' || scheme === 'sustainoverrule') {
-        // Two-button scheme: A/B = left-right or yes-no or free-detain
+        ['1', '2', '3', '4'].forEach(l => mkBtn(l, String.fromCharCode(97 + parseInt(l) - 1), 'pad-btn ' + side, grid));
+      } else if (scheme === 'yesno' || scheme === 'freedetain' || scheme === 'sustainoverrule' || scheme === 'complyobject') {
+        // Two-button scheme
         const labels = scheme === 'yesno' ? ['YES', 'NO']
                      : scheme === 'freedetain' ? ['FREE', 'DETAIn']
+                     : scheme === 'complyobject' ? ['COMPLY', 'OBJECT']
                      : ['SUSTAIN', 'OVERRULE'];
         mkBtn(labels[0], 'a', 'buzz-single blue', pad);
         mkBtn(labels[1], 'b', 'buzz-single red', pad);

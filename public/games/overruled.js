@@ -88,7 +88,7 @@ function createOverruledGame(app) {
 
   async function start() {
     if (!bank.length) await load();
-    deck = getUnusedItems(bank, 'overruled', MAX);
+    deck = shuffleNoStreak(getUnusedItems(bank, 'overruled', MAX), item => item.sustained);
     round = 0; app.scores = { red: 0, blue: 0 };
     updateScoreBar(); setHint(); showScreen('game');
     startRound();
