@@ -889,11 +889,12 @@ const homeScreen = document.getElementById('home');
 if (homeScreen) renderLeaderboard(homeScreen.querySelector('.arcade-card'));
 
 
-// ---- Tournament Night (chambers + leaderboard + auto-pair) ─────
+// ---- Tournament Night (prosecution/defence, auto-pairing) ─────
 // In PeerJS mode, tournament state lives entirely in the host browser.
 let tournamentCode = null;
-let tournamentState = { players: [], chambers: [], history: [], currentMatch: null };
+let tournamentState = { players: [], history: [], currentMatch: null };
 let myPlayerId = null;
+let tournamentGameMode = 'auto'; // 'auto' or 'manual'
 
 function makeId() {
   return Math.random().toString(36).slice(2, 12);
@@ -904,28 +905,21 @@ function getTournament() {
 }
 
 function broadcastTournament() {
-  // No socket broadcast — update local UI directly
   updateTournamentUI();
   showMatch();
 }
 
-function addPlayer(name, chamberName) {
+function addPlayer(name) {
   const t = getTournament();
-  let chamber = t.chambers.find(c => c.name.toLowerCase() === chamberName.toLowerCase().trim());
-  if (!chamber) {
-    const colors = ['#ff2a6d', '#05d9e8', '#ffd300', '#a855f7', '#22c55e', '#f97316'];
-    chamber = {
-      id: makeId(),
-      name: chamberName.trim(),
-      color: colors[t.chambers.length % colors.length],
-      points: 0
-    };
-    t.chambers.push(chamber);
-  }
+  // Auto-assign side: alternate prosecution/defence to keep them even
+  const redCount = t.players.filter(p => p.side === 'red').length;
+  const blueCount = t.players.filter(p => p.side === 'blue').length;
+  const side = redCount <= blueCount ? 'red' : 'blue';
+
   const player = {
     id: makeId(),
     name: name.trim(),
-    chamberId: chamber.id,
+    side: side,
     wins: 0,
     matches: 0
   };
@@ -940,16 +934,33 @@ function removePlayer(playerId) {
   broadcastTournament();
 }
 
-function autoPair(game = 'guilty') {
+function getTournamentGame() {
+  if (tournamentGameMode === 'manual') {
+    const select = document.getElementById('tournament-game-select');
+    if (select && select.value) return select.value;
+  }
+  // Auto: pick a random game that hasn't been played recently
+  const t = getTournament();
+  const recentGames = t.history.slice(-5).map(h => h.game);
+  const available = Object.keys(GAME_FACTORIES).filter(g => !recentGames.includes(g));
+  const pool = available.length > 0 ? available : Object.keys(GAME_FACTORIES);
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
+function autoPair() {
   const t = getTournament();
   if (t.players.length < 2) return null;
 
-  const sorted = [...t.players].sort((a, b) => a.matches - b.matches);
+  // Pair one prosecution vs one defence, prioritising players with fewest matches
+  const redPlayers = t.players.filter(p => p.side === 'red').sort((a, b) => a.matches - b.matches);
+  const bluePlayers = t.players.filter(p => p.side === 'blue').sort((a, b) => a.matches - b.matches);
+
+  if (redPlayers.length === 0 || bluePlayers.length === 0) return null;
+
+  // Find a pairing that hasn't played each other yet
   let bestPair = null;
-  for (const red of sorted) {
-    for (const blue of sorted) {
-      if (red.id === blue.id) continue;
-      if (red.chamberId === blue.chamberId) continue;
+  for (const red of redPlayers) {
+    for (const blue of bluePlayers) {
       const alreadyPlayed = t.history.some(h =>
         (h.redId === red.id && h.blueId === blue.id) ||
         (h.redId === blue.id && h.blueId === red.id)
@@ -963,16 +974,17 @@ function autoPair(game = 'guilty') {
   }
 
   if (!bestPair) {
-    bestPair = { red: sorted[0], blue: sorted[1] };
+    // All combos played — just pick the two with fewest matches
+    bestPair = { red: redPlayers[0], blue: bluePlayers[0] };
   }
+
+  const game = getTournamentGame();
 
   t.currentMatch = {
     redId: bestPair.red.id,
     blueId: bestPair.blue.id,
     redName: bestPair.red.name,
     blueName: bestPair.blue.name,
-    redChamber: bestPair.red.chamberId,
-    blueChamber: bestPair.blue.chamberId,
     game,
     status: 'ready'
   };
@@ -998,72 +1010,55 @@ function recordResult(winnerId) {
   const winningPlayer = winnerId === 'draw' ? null : t.players.find(p => p.id === winnerId);
   if (winningPlayer) {
     winningPlayer.wins += 1;
-    const chamber = t.chambers.find(c => c.id === winningPlayer.chamberId);
-    if (chamber) chamber.points += 3;
-  } else {
-    const redChamber = t.chambers.find(c => c.id === match.redChamber);
-    const blueChamber = t.chambers.find(c => c.id === match.blueChamber);
-    if (redChamber) redChamber.points += 1;
-    if (blueChamber) blueChamber.points += 1;
   }
 
   t.currentMatch = null;
   broadcastTournament();
 }
 
-function renderChambers() {
-  const el = document.getElementById('tournament-chambers');
-  if (!el) return;
-  el.innerHTML = tournamentState.chambers.map(c => `
-    <div class="chamber-pill" style="border-left:4px solid ${c.color};">
-      <span class="chamber-name" style="color:${c.color};">${c.name}</span>
-      <span class="chamber-score">${c.points || 0} pts</span>
-    </div>
-  `).join('') || '<p style="color:var(--muted);font-size:0.85rem;">No chambers yet.</p>';
-}
+function renderTournamentRoster() {
+  const t = getTournament();
+  const redEl = document.getElementById('tournament-prosecution');
+  const blueEl = document.getElementById('tournament-defence');
+  if (!redEl || !blueEl) return;
 
-function renderTournamentPlayers() {
-  const el = document.getElementById('tournament-players');
-  if (!el) return;
-  el.innerHTML = tournamentState.players.map(p => {
-    const chamber = tournamentState.chambers.find(c => c.id === p.chamberId);
-    const color = chamber ? chamber.color : 'var(--muted)';
-    return `
-      <div class="player-row">
-        <span class="player-name" style="color:${color};">${p.name}</span>
-        <span class="player-stats">${p.wins || 0}W · ${p.matches || 0}M</span>
-      </div>
-    `;
-  }).join('') || '<p style="color:var(--muted);font-size:0.85rem;">No players yet.</p>';
+  const reds = t.players.filter(p => p.side === 'red');
+  const blues = t.players.filter(p => p.side === 'blue');
+
+  redEl.innerHTML = reds.map(p => `
+    <div class="player-row">
+      <span class="player-name" style="color:var(--neon-red);">${p.name}</span>
+      <span class="player-stats">${p.wins || 0}W · ${p.matches || 0}M</span>
+    </div>
+  `).join('') || '<p style="color:var(--muted);font-size:0.85rem;">No players yet.</p>';
+
+  blueEl.innerHTML = blues.map(p => `
+    <div class="player-row">
+      <span class="player-name" style="color:var(--neon-blue);">${p.name}</span>
+      <span class="player-stats">${p.wins || 0}W · ${p.matches || 0}M</span>
+    </div>
+  `).join('') || '<p style="color:var(--muted);font-size:0.85rem;">No players yet.</p>';
+
   const pairBtn = document.getElementById('pair-next-btn');
-  if (pairBtn) pairBtn.disabled = tournamentState.players.length < 2;
+  if (pairBtn) pairBtn.disabled = reds.length < 1 || blues.length < 1;
 }
 
 function updateTournamentUI() {
-  renderChambers();
-  renderTournamentPlayers();
+  renderTournamentRoster();
 }
 
 function renderFullLeaderboard() {
-  const chambersEl = document.getElementById('leaderboard-chambers');
   const playersEl = document.getElementById('leaderboard-players');
-  if (!chambersEl || !playersEl) return;
-
-  const sortedChambers = [...tournamentState.chambers].sort((a, b) => (b.points || 0) - (a.points || 0));
-  chambersEl.innerHTML = sortedChambers.map((c, i) => `
-    <div class="leaderboard-row" style="border-left:4px solid ${c.color};">
-      <span>${i + 1}. ${c.name}</span>
-      <span style="color:${c.color};font-weight:800;">${c.points || 0} pts</span>
-    </div>
-  `).join('') || '<p style="color:var(--muted);">No chamber scores yet.</p>';
+  if (!playersEl) return;
 
   const sortedPlayers = [...tournamentState.players].sort((a, b) => (b.wins || 0) - (a.wins || 0));
   playersEl.innerHTML = sortedPlayers.map((p, i) => {
-    const chamber = tournamentState.chambers.find(c => c.id === p.chamberId);
+    const sideColor = p.side === 'red' ? 'var(--neon-red)' : 'var(--neon-blue)';
+    const sideLabel = p.side === 'red' ? 'Prosecution' : 'Defence';
     return `
       <div class="leaderboard-row">
-        <span>${i + 1}. ${p.name}${chamber ? ` · ${chamber.name}` : ''}</span>
-        <span style="font-weight:800;">${p.wins || 0}W</span>
+        <span>${i + 1}. ${p.name} <span style="color:${sideColor};font-size:0.8rem;">· ${sideLabel}</span></span>
+        <span style="font-weight:800;">${p.wins || 0}W · ${p.matches || 0}M</span>
       </div>
     `;
   }).join('') || '<p style="color:var(--muted);">No player scores yet.</p>';
@@ -1081,22 +1076,33 @@ function showMatch() {
   if (lobby) lobby.style.display = 'none';
   if (matchEl) matchEl.style.display = 'block';
 
-  const redChamber = tournamentState.chambers.find(c => c.id === match.redChamber);
-  const blueChamber = tournamentState.chambers.find(c => c.id === match.blueChamber);
+  const gameMeta = GAME_META[match.game];
+  const gameLabel = document.getElementById('match-game-label');
+  if (gameLabel && gameMeta) gameLabel.textContent = `${gameMeta.icon} ${gameMeta.title}`;
 
   document.getElementById('match-red-name').textContent = match.redName;
-  document.getElementById('match-red-chamber').textContent = redChamber ? redChamber.name : '';
-  document.getElementById('match-red-chamber').style.color = redChamber ? redChamber.color : 'var(--muted)';
+  document.getElementById('match-red-chamber').textContent = 'PROSECUTION';
+  document.getElementById('match-red-chamber').style.color = 'var(--neon-red)';
 
   document.getElementById('match-blue-name').textContent = match.blueName;
-  document.getElementById('match-blue-chamber').textContent = blueChamber ? blueChamber.name : '';
-  document.getElementById('match-blue-chamber').style.color = blueChamber ? blueChamber.color : 'var(--muted)';
+  document.getElementById('match-blue-chamber').textContent = 'DEFENCE';
+  document.getElementById('match-blue-chamber').style.color = 'var(--neon-blue)';
+}
+
+// Populate game select dropdown
+function populateGameSelect() {
+  const select = document.getElementById('tournament-game-select');
+  if (!select) return;
+  select.innerHTML = Object.entries(GAME_META).map(([key, meta]) =>
+    `<option value="${key}">${meta.icon} ${meta.title}</option>`
+  ).join('');
 }
 
 const tournamentBtn = document.getElementById('tournament-btn');
 if (tournamentBtn) {
   tournamentBtn.addEventListener('click', () => {
     tournamentCode = 'local';
+    populateGameSelect();
     showScreen('tournament');
   });
 }
@@ -1105,14 +1111,35 @@ const registerBtn = document.getElementById('register-btn');
 if (registerBtn) {
   registerBtn.addEventListener('click', () => {
     const name = document.getElementById('player-name').value.trim();
-    const chamber = document.getElementById('chamber-name').value.trim();
-    if (!name || !chamber) return alert('Enter your name and chamber.');
-    const player = addPlayer(name, chamber);
+    if (!name) return alert('Enter a player name.');
+    const player = addPlayer(name);
     myPlayerId = player.id;
     document.getElementById('player-name').value = '';
-    document.getElementById('chamber-name').value = '';
   });
 }
+
+const autoGameBtn = document.getElementById('auto-game-btn');
+if (autoGameBtn) {
+  autoGameBtn.addEventListener('click', () => {
+    tournamentGameMode = 'auto';
+    autoGameBtn.classList.add('primary');
+    manualGameBtn.classList.remove('primary');
+    document.getElementById('manual-game-select').style.display = 'none';
+  });
+}
+
+const manualGameBtn = document.getElementById('manual-game-btn');
+if (manualGameBtn) {
+  manualGameBtn.addEventListener('click', () => {
+    tournamentGameMode = 'manual';
+    manualGameBtn.classList.add('primary');
+    autoGameBtn.classList.remove('primary');
+    document.getElementById('manual-game-select').style.display = 'block';
+  });
+}
+
+// Set default mode
+if (autoGameBtn) autoGameBtn.classList.add('primary');
 
 const pairNextBtn = document.getElementById('pair-next-btn');
 if (pairNextBtn) {

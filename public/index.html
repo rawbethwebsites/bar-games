@@ -55,41 +55,51 @@
 
         <div id="tournament-lobby">
           <div class="form-row">
-            <input id="player-name" placeholder="Your name" maxlength="24" />
-            <input id="chamber-name" placeholder="Chamber / group" maxlength="24" />
-            <button class="mode-btn primary" id="register-btn">JOIN</button>
+            <input id="player-name" placeholder="Player name" maxlength="24" />
+            <button class="mode-btn primary" id="register-btn">ADD PLAYER</button>
           </div>
 
-          <div class="leaderboard" style="margin-top:1.5rem;">
-            <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.9rem;letter-spacing:0.1em;margin-bottom:0.75rem;">CHAMBERS</div>
-            <div id="tournament-chambers" class="tournament-chambers"></div>
-
-            <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.9rem;letter-spacing:0.1em;margin:1.5rem 0 0.75rem;">PLAYERS</div>
-            <div id="tournament-players" class="tournament-players"></div>
+          <div class="tournament-roster" style="margin-top:1.5rem;">
+            <div style="font-family:Orbitron,sans-serif;color:var(--neon-red);font-size:0.9rem;letter-spacing:0.1em;margin-bottom:0.5rem;">🔴 PROSECUTION</div>
+            <div id="tournament-prosecution" class="tournament-side-list"></div>
+            <div style="font-family:Orbitron,sans-serif;color:var(--neon-blue);font-size:0.9rem;letter-spacing:0.1em;margin:1rem 0 0.5rem;">🔵 DEFENCE</div>
+            <div id="tournament-defence" class="tournament-side-list"></div>
           </div>
 
-          <button class="mode-btn primary" id="pair-next-btn" style="margin-top:1.5rem;width:100%;" disabled>AUTO-PAIR NEXT MATCH</button>
+          <div style="margin-top:1.5rem;">
+            <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.85rem;letter-spacing:0.1em;margin-bottom:0.75rem;">GAME SELECTION</div>
+            <div class="mode-select" style="gap:0.75rem;">
+              <button class="mode-btn" id="auto-game-btn" style="flex:1;">🎲 AUTO PICK GAME</button>
+              <button class="mode-btn" id="manual-game-btn" style="flex:1;">✋ CHOOSE GAME</button>
+            </div>
+            <div id="manual-game-select" style="display:none;margin-top:0.75rem;">
+              <select id="tournament-game-select" style="width:100%;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.15);color:var(--text);padding:0.8rem;border-radius:12px;font-family:Orbitron,sans-serif;font-size:0.85rem;">
+              </select>
+            </div>
+          </div>
+
+          <button class="mode-btn primary" id="pair-next-btn" style="margin-top:1.5rem;width:100%;" disabled>AUTO-PAIR &amp; START MATCH</button>
           <button class="mode-btn" id="view-leaderboard-btn" style="margin-top:0.75rem;width:100%;">VIEW LEADERBOARD</button>
         </div>
 
         <div id="tournament-match" style="display:none;">
           <div class="match-card">
-            <div class="round-label">NEXT MATCH</div>
+            <div class="round-label" id="match-game-label">NEXT MATCH</div>
             <div class="versus">
               <div class="combatant">
                 <div class="combatant-name" id="match-red-name">—</div>
-                <div class="combatant-chamber" id="match-red-chamber">—</div>
+                <div class="combatant-chamber" id="match-red-chamber">PROSECUTION</div>
               </div>
               <div class="vs">VS</div>
               <div class="combatant">
                 <div class="combatant-name" id="match-blue-name">—</div>
-                <div class="combatant-chamber" id="match-blue-chamber">—</div>
+                <div class="combatant-chamber" id="match-blue-chamber">DEFENCE</div>
               </div>
             </div>
             <div class="mode-select" style="margin-top:1.5rem;">
-              <button class="mode-btn neon-red" id="winner-red-btn">RED WINS</button>
+              <button class="mode-btn neon-red" id="winner-red-btn">PROSECUTION WINS</button>
               <button class="mode-btn" id="winner-draw-btn">DRAW</button>
-              <button class="mode-btn neon-blue" id="winner-blue-btn">BLUE WINS</button>
+              <button class="mode-btn neon-blue" id="winner-blue-btn">DEFENCE WINS</button>
             </div>
             <button class="mode-btn back" id="cancel-match-btn" style="margin-top:1rem;">CANCEL MATCH</button>
           </div>
@@ -105,15 +115,9 @@
           <h2 class="arcade-heading">LEADERBOARD</h2>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;text-align:left;">
-          <div>
-            <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.9rem;letter-spacing:0.1em;margin-bottom:0.75rem;">CHAMBER STANDINGS</div>
-            <div id="leaderboard-chambers"></div>
-          </div>
-          <div>
-            <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.9rem;letter-spacing:0.1em;margin-bottom:0.75rem;">PLAYER STANDINGS</div>
-            <div id="leaderboard-players"></div>
-          </div>
+        <div style="text-align:left;">
+          <div style="font-family:Orbitron,sans-serif;color:var(--neon-gold);font-size:0.9rem;letter-spacing:0.1em;margin-bottom:0.75rem;">PLAYER STANDINGS</div>
+          <div id="leaderboard-players"></div>
         </div>
 
         <button class="mode-btn primary" onclick="showScreen('tournament')" style="margin-top:2rem;">BACK TO TOURNAMENT</button>
