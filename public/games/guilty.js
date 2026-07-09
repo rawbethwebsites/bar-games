@@ -33,12 +33,12 @@ function createGuiltyGame(app) {
         <p style="font-size:1.6rem;line-height:1.5;">${currentCase.text}</p>
       </div>
       <div class="choices">
-        <button class="choice-btn choice-real" data-side="red">REAL</button>
         <button class="choice-btn choice-fake" data-side="red">FAKE</button>
+        <button class="choice-btn choice-real" data-side="red">REAL</button>
       </div>
       <div class="choices">
-        <button class="choice-btn choice-real" data-side="blue">REAL</button>
         <button class="choice-btn choice-fake" data-side="blue">FAKE</button>
+        <button class="choice-btn choice-real" data-side="blue">REAL</button>
       </div>
     `;
 
@@ -172,13 +172,13 @@ function createGuiltyGame(app) {
   function onKey(key) {
     if (!currentCase || waitingReveal) return;
 
-    // Left player: A/← = Real, D/→ = Fake
-    if (key === 'a' || key === 'arrowleft') lockIn('red', true);
-    if (key === 'd' || key === 'arrowright') lockIn('red', false);
+    // Left player: A/← = Fake, D/→ = Real
+    if (key === 'a' || key === 'arrowleft') lockIn('red', false);
+    if (key === 'd' || key === 'arrowright') lockIn('red', true);
 
-    // Right player: J/numpad4 = Real, L/numpad6 = Fake
-    if (key === 'j' || key === '4') lockIn('blue', true);
-    if (key === 'l' || key === '6') lockIn('blue', false);
+    // Right player: J/numpad4 = Fake, L/numpad6 = Real
+    if (key === 'j' || key === '4') lockIn('blue', false);
+    if (key === 'l' || key === '6') lockIn('blue', true);
   }
 
   function onPhoneAction(action, side) {
