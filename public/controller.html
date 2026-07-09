@@ -225,9 +225,13 @@
 
       if (scheme === 'buzz') {
         mkBtn('BUZZ', 'buzz', 'buzz-single ' + side, pad);
-      } else if (scheme === 'abcd') {
+      } else if (scheme === 'abcd' || scheme === 'burden') {
         const grid = document.createElement('div'); grid.className = 'pad-grid'; pad.appendChild(grid);
         ['1', '2', '3', '4'].forEach(l => mkBtn(l, String.fromCharCode(97 + parseInt(l) - 1), 'pad-btn ' + side, grid));
+      } else if (scheme === 'xref') {
+        mkBtn('SUPPORTED', 'a', 'buzz-single blue', pad);
+        mkBtn('CONTRADICTED', 'b', 'buzz-single red', pad);
+        mkBtn('NOT MENTIONED', 'c', 'buzz-single ' + side, pad);
       } else if (scheme === 'yesno' || scheme === 'freedetain' || scheme === 'sustainoverrule' || scheme === 'complyobject') {
         // Two-button scheme
         const labels = scheme === 'yesno' ? ['YES', 'NO']

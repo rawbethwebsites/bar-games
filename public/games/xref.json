@@ -1,0 +1,41 @@
+[
+  {
+    "title": "The Tenancy Agreement",
+    "emoji": "🏠",
+    "story": "A tenancy agreement between landlord Mr. Bello and tenant Ms. Folake states: 'The tenant shall pay rent of ₦500,000 per annum, payable in advance on 1st January each year. The tenant shall not sublet the premises without written consent of the landlord. The landlord shall maintain the structural integrity of the building. The landlord may give 2 months' written notice to terminate this agreement. The tenant may give 1 month's written notice. The tenant shall not keep pets. The landlord shall not enter the premises without 24 hours' written notice except in cases of emergency.'",
+    "questions": [
+      { "q": "Ms. Folake gives notice on 15th March and wants to leave on 15th April. Is this valid?", "answer": "supported", "explain": "The tenant may give 1 month's written notice. 15th March to 15th April is exactly one month. This is supported by the agreement." },
+      { "q": "Mr. Bello turns up unannounced on a Tuesday to inspect the property. No emergency exists. Is this valid?", "answer": "contradicted", "explain": "The landlord shall not enter without 24 hours' written notice except in emergencies. No emergency exists, so unannounced entry is contradicted by the agreement." },
+      { "q": "Ms. Folake brings a cat. The agreement is silent on what 'pets' includes.", "answer": "contradicted", "explain": "The tenant shall not keep pets. A cat is a pet. This is clearly contradicted by the agreement." },
+      { "q": "Ms. Folake sublets a room to her cousin without telling Mr. Bello. She argues a cousin is 'family, not a sublet.'", "answer": "contradicted", "explain": "The tenant shall not sublet without written consent. Allowing someone else to occupy and pay for a room is subletting, regardless of family relationship." },
+      { "q": "The roof leaks. Mr. Bello says it's Ms. Folake's responsibility to fix it.", "answer": "contradicted", "explain": "The landlord shall maintain the structural integrity of the building. A roof leak is structural. This is the landlord's responsibility." },
+      { "q": "Ms. Folake pays rent on 15th January instead of 1st January. She argues it's still 'in advance.'", "answer": "contradicted", "explain": "Rent is payable in advance on 1st January. Paying on 15th January is two weeks late, not in advance. The agreement is specific about the date." }
+    ]
+  },
+  {
+    "title": "The Employment Contract",
+    "emoji": "💼",
+    "story": "An employment contract between Apex Tech Ltd and employee Mr. Daniel states: 'The employee shall work 40 hours per week, Monday to Friday, 9 AM to 5 PM. The probation period is 6 months. During probation, either party may terminate with 1 week's notice. After probation, termination requires 2 months' notice or payment in lieu. The employee shall not work for a competitor within 50km for 6 months after leaving. The employee is entitled to 21 days annual leave, to be taken at a time approved by the employer. Overtime is paid at 1.5x hourly rate for hours beyond 40 per week. The employee shall not disclose confidential company information at any time, during or after employment.'",
+    "questions": [
+      { "q": "Mr. Daniel is fired after 4 months with 1 week's notice. He claims unfair dismissal.", "answer": "contradicted", "explain": "During probation, either party may terminate with 1 week's notice. He's still in probation (6 months) and got 1 week's notice. The contract supports the employer." },
+      { "q": "Mr. Daniel works Saturday 10 AM to 2 PM and claims overtime at 1.5x.", "answer": "contradicted", "explain": "Overtime is for hours beyond 40 per week. Saturday is outside the normal Monday-Friday schedule, but the contract specifies overtime for hours 'beyond 40 per week,' not for weekend work specifically. If he already worked 40 hours Mon-Fri, Saturday hours would qualify." },
+      { "q": "After leaving, Mr. Daniel starts a job at a competitor 60km away, 2 months later.", "answer": "supported", "explain": "The restriction is within 50km for 6 months. He's 60km away (outside the radius) and only 2 months have passed. Even if within the time limit, the distance is outside the restriction." },
+      { "q": "Mr. Daniel takes 21 days leave in December without asking his employer. He says it's his entitlement.", "answer": "contradicted", "explain": "21 days annual leave is the entitlement, but it must be 'taken at a time approved by the employer.' Taking it without approval contradicts the agreement." },
+      { "q": "Mr. Daniel is terminated after 8 months with 1 week's notice.", "answer": "contradicted", "explain": "After probation (6 months), termination requires 2 months' notice or payment in lieu. At 8 months he's past probation, so 1 week's notice is insufficient." },
+      { "q": "Mr. Daniel shares details about Apex's upcoming product launch with a friend, 3 years after leaving.", "answer": "contradicted", "explain": "The employee shall not disclose confidential company information at any time, during or after employment. 'At any time' means forever. Sharing it 3 years later is still a breach." }
+    ]
+  },
+  {
+    "title": "The Sale of Goods Receipt",
+    "emoji": "🛒",
+    "story": "A receipt and warranty document for a laptop purchased from TechZone states: 'The laptop is sold with a 12-month manufacturer warranty covering manufacturing defects only. Water damage, screen cracks, and software issues are not covered. The warranty is void if the laptop is opened or repaired by an unauthorised technician. TechZone offers a 14-day return policy for unopened items in original packaging. Opened items may be returned within 7 days for store credit only, subject to a 15% restocking fee. Refunds are issued to the original payment method within 5-10 working days. Extended warranty (2 additional years) can be purchased separately within 30 days of purchase.'",
+    "questions": [
+      { "q": "The laptop screen cracks after 2 months. Customer demands a free repair under warranty.", "answer": "contradicted", "explain": "Screen cracks are explicitly not covered by the warranty. The customer must pay for the repair." },
+      { "q": "Customer returns an unopened laptop after 10 days for a full refund.", "answer": "supported", "explain": "14-day return policy for unopened items in original packaging. 10 days is within 14 days, and it's unopened. Full refund to original payment method." },
+      { "q": "Customer opens the laptop, doesn't like it, and returns it after 10 days wanting a full cash refund.", "answer": "contradicted", "explain": "Opened items may be returned within 7 days for store credit only, subject to 15% restocking fee. It's opened (not unopened), past 7 days for opened returns, and store credit only — not cash refund." },
+      { "q": "Customer has a local repair shop fix a keyboard issue, then claims warranty for a later motherboard failure.", "answer": "contradicted", "explain": "The warranty is void if the laptop is opened or repaired by an unauthorised technician. Having a local shop repair it voids the warranty entirely." },
+      { "q": "Customer buys extended warranty on day 35 after purchase.", "answer": "contradicted", "explain": "Extended warranty can be purchased within 30 days of purchase. Day 35 is outside the window." },
+      { "q": "Customer's laptop has a manufacturing defect after 18 months, with extended warranty purchased.", "answer": "supported", "explain": "12-month manufacturer warranty plus 2 additional years of extended warranty = 3 years total coverage. 18 months is within the extended period." }
+    ]
+  }
+]
