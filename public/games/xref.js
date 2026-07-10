@@ -74,19 +74,19 @@ function createXrefGame(app) {
       <div class="split-cols">
         <div class="split-col red" id="col-red">
           <div class="tag">🔴 Prosecution</div>
-          <div class="choices">
-            <button class="choice-btn choice-real" data-side="red" data-ans="supported">A. SUPPORTED</button>
-            <button class="choice-btn choice-fake" data-side="red" data-ans="contradicted">D. CONTRADICTED</button>
-            <button class="choice-btn" data-side="red" data-ans="notmentioned" style="background:var(--neon-gold);color:#000;">S. NOT MENTIONED</button>
+          <div class="choices xref-choices">
+            <button class="choice-btn choice-real" data-side="red" data-ans="supported">A · SUPPORTED</button>
+            <button class="choice-btn choice-fake" data-side="red" data-ans="contradicted">D · CONTRADICTED</button>
+            <button class="choice-btn xref-notm" data-side="red" data-ans="notmentioned">S · NOT MENTIONED</button>
           </div>
           <div class="col-status" id="stat-red"></div>
         </div>
         <div class="split-col blue" id="col-blue">
           <div class="tag">🔵 Defence</div>
-          <div class="choices">
-            <button class="choice-btn choice-real" data-side="blue" data-ans="supported">J. SUPPORTED</button>
-            <button class="choice-btn choice-fake" data-side="blue" data-ans="contradicted">L. CONTRADICTED</button>
-            <button class="choice-btn" data-side="blue" data-ans="notmentioned" style="background:var(--neon-gold);color:#000;">K. NOT MENTIONED</button>
+          <div class="choices xref-choices">
+            <button class="choice-btn choice-real" data-side="blue" data-ans="supported">J · SUPPORTED</button>
+            <button class="choice-btn choice-fake" data-side="blue" data-ans="contradicted">L · CONTRADICTED</button>
+            <button class="choice-btn xref-notm" data-side="blue" data-ans="notmentioned">K · NOT MENTIONED</button>
           </div>
           <div class="col-status" id="stat-blue"></div>
         </div>
