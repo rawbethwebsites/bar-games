@@ -115,5 +115,6 @@ function createPleaGame(app) {
     if (action === 'fake') pick(side, false);
   }
 
-  return { start, onKey, onPhoneAction };
+  function cleanup() { if (timer) clearInterval(timer); }
+  return { start, onKey, onPhoneAction, cleanup };
 }

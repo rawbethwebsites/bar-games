@@ -124,5 +124,6 @@ function createSustainedGame(app) {
     if (action in map) pick(side, map[action]);
   }
 
-  return { start, onKey, onPhoneAction };
+  function cleanup() { if (timer) clearInterval(timer); }
+  return { start, onKey, onPhoneAction, cleanup };
 }

@@ -103,5 +103,6 @@ function createHabeasGame(app) {
   }
   function onPhoneAction(action, side) { if (action === 'a') pick(side, true); if (action === 'b') pick(side, false); }
 
-  return { start, onKey, onPhoneAction };
+  function cleanup() { if (timer) clearInterval(timer); }
+  return { start, onKey, onPhoneAction, cleanup };
 }

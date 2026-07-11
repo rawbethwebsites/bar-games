@@ -111,5 +111,6 @@ function createObjectionGame(app) {
   }
   function onPhoneAction(action, side) { if (action === 'buzz') buzz(side); }
 
-  return { start, onKey, onPhoneAction };
+  function cleanup() { if (timer) clearInterval(timer); }
+  return { start, onKey, onPhoneAction, cleanup };
 }
