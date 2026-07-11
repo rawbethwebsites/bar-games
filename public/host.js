@@ -213,6 +213,34 @@ function renderLeaderboard(container) {
 }
 
 // ── PeerJS host setup ──────────────────────────────────────────
+
+// ICE servers: Google STUN (always works) + OpenRelay TURN (for cross-network)
+// TURN is critical when host is on WiFi and phones are on cellular —
+// STUN alone can't traverse symmetric NAT without a relay.
+const ICE_CONFIG = {
+  iceServers: [
+    { urls: 'stun:stun.l.google.com:19302' },
+    { urls: 'stun:stun1.l.google.com:19302' },
+    { urls: 'stun:stun2.l.google.com:19302' },
+    // OpenRelay free TURN — relays traffic when P2P fails
+    {
+      urls: 'turn:openrelay.metered.ca:80',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+    {
+      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+      username: 'openrelayproject',
+      credential: 'openrelayproject',
+    },
+  ],
+};
+
 function initPeer() {
   if (App.peer) return;
 
@@ -221,7 +249,8 @@ function initPeer() {
   App.roomCode = roomCode;
 
   // Use the room code as the peer ID — easy for phones to type
-  App.peer = new Peer('bar-games-' + roomCode);
+  // Pass ICE config so WebRTC can use TURN when STUN fails
+  App.peer = new Peer('bar-games-' + roomCode, { config: ICE_CONFIG });
 
   App.peer.on('open', (id) => {
     showPhoneLobby(id, roomCode);
@@ -321,6 +350,14 @@ function initPeer() {
       App.peer.destroy();
       App.peer = null;
       initPeer();
+    } else if (err.type === 'network' || err.type === 'server-error' || err.type === 'disconnected') {
+      // Show visible error on the phone lobby screen
+      const rc = document.getElementById('room-code');
+      if (rc) rc.innerHTML = '<span style="color:var(--neon-red)">Server error — retrying…</span>';
+      // Try to reconnect after 2s
+      App.peer.destroy();
+      App.peer = null;
+      setTimeout(() => initPeer(), 2000);
     }
   });
 

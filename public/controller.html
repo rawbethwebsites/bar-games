@@ -181,13 +181,37 @@
     <div id="pad"><div class="wait-msg">Waiting for the host to start a game…</div></div>
   </div>
 
-  <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
   <script src="/sfx.js"></script>
   <script src="/favicon-blink.js"></script>
   <script>
     let conn = null;
     let side = null;
     let room = null;
+
+    // ICE config must match the host — TURN relay for cross-network
+    const ICE_CONFIG = {
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+        {
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+      ],
+    };
 
     const params = new URLSearchParams(window.location.search);
     const prefilledRoom = params.get('room');
@@ -270,7 +294,8 @@
       let pollTimer = null;
 
       function connectToHost() {
-        peer = new Peer();
+        // Pass ICE config so WebRTC can use TURN when STUN fails
+        peer = new Peer({ config: ICE_CONFIG });
 
         peer.on('open', () => {
           conn = peer.connect(hostId, { reliable: true });
@@ -312,15 +337,15 @@
             }
           });
 
-          // Timeout: if no response in 8s, show error
+          // Timeout: if no response in 10s, show error with hint
           setTimeout(() => {
             if (!joined) {
               if (retryTimer) clearInterval(retryTimer);
               document.getElementById('connecting').style.display = 'none';
               document.getElementById('join-panel').style.display = 'block';
-              document.getElementById('err-msg').textContent = 'Could not reach host. Check the room code.';
+              document.getElementById('err-msg').textContent = 'Could not reach host. Check the room code and make sure the host is on the same site.';
             }
-          }, 8000);
+          }, 10000);
 
           conn.on('close', () => {
             if (retryTimer) clearInterval(retryTimer);
@@ -331,20 +356,33 @@
             document.getElementById('connecting').style.display = 'none';
           });
 
-          conn.on('error', () => {
+          conn.on('error', (err) => {
+            console.error('Connection error:', err);
             if (retryTimer) clearInterval(retryTimer);
             if (pollTimer) clearInterval(pollTimer);
             document.getElementById('connecting').style.display = 'none';
             document.getElementById('join-panel').style.display = 'block';
-            document.getElementById('err-msg').textContent = 'Connection failed. Try again.';
+            const errType = err && err.type ? err.type : 'unknown';
+            let msg = 'Connection failed. Try again.';
+            if (errType === 'peer-unavailable') msg = 'Host not found. Check the room code.';
+            else if (errType === 'network' || errType === 'server-error') msg = 'Network error. Check your internet connection.';
+            else if (errType === 'browser-incompatible') msg = 'Browser not supported. Try Chrome or Safari.';
+            document.getElementById('err-msg').textContent = msg;
           });
         });
 
         peer.on('error', (err) => {
+          console.error('Peer error:', err);
           if (retryTimer) clearInterval(retryTimer);
           document.getElementById('connecting').style.display = 'none';
           document.getElementById('join-panel').style.display = 'block';
-          document.getElementById('err-msg').textContent = 'Connection error: ' + (err.type || 'unknown');
+          const errType = err && err.type ? err.type : 'unknown';
+          let msg = 'Connection error: ' + errType;
+          if (errType === 'network' || errType === 'server-error') msg = 'Cannot reach the game server. Check your internet and try again.';
+          else if (errType === 'browser-incompatible') msg = 'Browser not supported. Try Chrome or Safari.';
+          else if (errType === 'disconnected') msg = 'Lost connection to server. Try again.';
+          else if (errType === 'unavailable-id') msg = 'Connection busy. Try again.';
+          document.getElementById('err-msg').textContent = msg;
         });
       }
 
