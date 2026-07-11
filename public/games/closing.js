@@ -115,6 +115,6 @@ function createClosingGame(app) {
     if (phase === 'pick' && action in map) pick(side, map[action]);
   }
 
-  function cleanup() { if (timer) clearInterval(timer); }
+  function cleanup() { /* no persistent timer */ }
   return { start, onKey, onPhoneAction, cleanup };
 }

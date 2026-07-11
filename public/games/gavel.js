@@ -142,6 +142,6 @@ function createGavelGame(app) {
   }
   function onPhoneAction(action, side) { if (action === 'buzz' || action === 'stop') stop(side); }
 
-  function cleanup() { if (timer) clearInterval(timer); }
+  function cleanup() { if (typeof raf !== "undefined" && raf) cancelAnimationFrame(raf); }
   return { start, onKey, onPhoneAction, cleanup };
 }

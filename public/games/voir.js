@@ -119,6 +119,6 @@ function createVoirGame(app) {
     if (action === 'buzz') lockIn(side);
   }
 
-  function cleanup() { if (timer) clearInterval(timer); }
+  function cleanup() { /* no persistent timer */ }
   return { start, onKey, onPhoneAction, cleanup };
 }

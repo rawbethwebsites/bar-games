@@ -111,6 +111,6 @@ function createObjectionGame(app) {
   }
   function onPhoneAction(action, side) { if (action === 'buzz') buzz(side); }
 
-  function cleanup() { if (timer) clearInterval(timer); }
+  function cleanup() { if (typeof t1 !== "undefined" && t1) clearTimeout(t1); if (typeof t2 !== "undefined" && t2) clearTimeout(t2); }
   return { start, onKey, onPhoneAction, cleanup };
 }
