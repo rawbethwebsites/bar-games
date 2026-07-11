@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: bargames-peer-server
+    runtime: node
+    plan: free
+    rootDir: peer-server
+    buildCommand: npm install
+    startCommand: node server.js
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production

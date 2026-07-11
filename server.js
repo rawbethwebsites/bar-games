@@ -184,6 +184,12 @@ io.on('connection', (socket) => {
     if (code) socket.to(code).emit('host-broadcast', payload);
   });
 
+  // Phone asks host for current controls (polling fallback)
+  socket.on('get-controls', () => {
+    const code = socket.roomCode;
+    if (code) socket.to(code).emit('get-controls', { from: socket.id });
+  });
+
   // Tournament endpoints
   socket.on('tournament-get', (code, cb) => {
     cb(getTournament(code));

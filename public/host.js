@@ -1,8 +1,8 @@
 const App = {
   mode: 'same-screen',
   roomCode: null,
-  peer: null,
-  connections: {}, // { red: conn, blue: conn }
+  socket: null,
+  connections: {}, // { red: true, blue: true }
   activeGame: null,
   scores: { red: 0, blue: 0 },
   selectedGame: null,
@@ -212,173 +212,67 @@ function renderLeaderboard(container) {
   if (container) container.insertAdjacentHTML('beforeend', html);
 }
 
-// ── PeerJS host setup ──────────────────────────────────────────
+// ── Socket.IO host setup ────────────────────────────────────────
 
-// ICE servers: Google STUN (always works) + OpenRelay TURN (for cross-network)
-// TURN is critical when host is on WiFi and phones are on cellular —
-// STUN alone can't traverse symmetric NAT without a relay.
-const ICE_CONFIG = {
-  iceServers: [
-    { urls: 'stun:stun.l.google.com:19302' },
-    { urls: 'stun:stun1.l.google.com:19302' },
-    { urls: 'stun:stun2.l.google.com:19302' },
-    // OpenRelay free TURN — relays traffic when P2P fails
-    {
-      urls: 'turn:openrelay.metered.ca:80',
-      username: 'openrelayproject',
-      credential: 'openrelayproject',
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443',
-      username: 'openrelayproject',
-      credential: 'openrelayproject',
-    },
-    {
-      urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-      username: 'openrelayproject',
-      credential: 'openrelayproject',
-    },
-  ],
-};
+// The server URL — use the deployed server, fallback to local dev
+const SERVER_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? `http://${window.location.hostname}:3000`
+  : 'https://bargames-server.onrender.com';
 
-function initPeer() {
-  if (App.peer) return;
+function initSocket() {
+  if (App.socket) return;
 
-  // Generate a short, human-readable room code (5 chars, alphanumeric)
-  const roomCode = generateRoomCode();
-  App.roomCode = roomCode;
-
-  // Use the room code as the peer ID — easy for phones to type
-  // Pass ICE config so WebRTC can use TURN when STUN fails
-  App.peer = new Peer('bar-games-' + roomCode, { config: ICE_CONFIG });
-
-  App.peer.on('open', (id) => {
-    showPhoneLobby(id, roomCode);
+  App.socket = io(SERVER_URL, {
+    transports: ['websocket', 'polling'],
+    reconnection: true,
+    reconnectionAttempts: 10,
+    reconnectionDelay: 1000,
   });
 
-  App.peer.on('connection', (conn) => {
-    // Track which side this connection is claiming, so we can send
-    // the 'joined' confirmation once conn.open fires.
-    let claimedSide = null;
+  App.socket.on('connect_error', (err) => {
+    console.error('Socket connect error:', err);
+    const rc = document.getElementById('room-code');
+    if (rc) rc.innerHTML = '<span style="color:var(--neon-red)">Connection error — retrying…</span>';
+  });
 
-    conn.on('data', (msg) => {
-      if (msg.type === 'join') {
-        const side = msg.side;
-        claimedSide = side;
-        const existing = App.connections[side];
-
-        if (existing && existing !== conn) {
-          // Different connection holds this side
-          if (existing.open && !existing.dead) {
-            if (conn.open) conn.send({ type: 'error', error: 'Side taken' });
-            return;
-          }
-          // Old connection is dead — clean it up
-          delete App.connections[side];
-          onPlayerLeft(side);
-        }
-
-        // Store (or re-store) this connection
-        App.connections[side] = conn;
-        conn.lastSeen = Date.now();
-
-        // Send confirmation — only if conn is open. If not open yet,
-        // the conn.on('open') handler below will send it.
-        if (conn.open) {
-          conn.send({ type: 'joined', side });
-        }
-        onPlayerJoined(side);
-      } else if (msg.type === 'player-action') {
-        if (App.activeGame && App.activeGame.onPhoneAction) {
-          App.activeGame.onPhoneAction(msg.action, msg.side);
-        }
-        const s = msg.side;
-        if (App.connections[s] === conn) conn.lastSeen = Date.now();
-      } else if (msg.type === 'get-controls') {
-        if (App.currentControls && conn.open) {
-          conn.send({ type: 'controls', scheme: App.currentControls.scheme, title: App.currentControls.title });
-        }
-        for (const s of ['red', 'blue']) {
-          if (App.connections[s] === conn) conn.lastSeen = Date.now();
-        }
-      }
-    });
-
-    // When the connection becomes ready, send 'joined' confirmation
-    // if this connection has already claimed a side but hasn't been
-    // confirmed yet (the join message arrived before open).
-    // Also re-send periodically in case the phone missed the first one.
-    conn.on('open', () => {
-      if (claimedSide && App.connections[claimedSide] === conn) {
-        conn.send({ type: 'joined', side: claimedSide });
-      }
-      // Safety net: re-send 'joined' every second for 5 seconds
-      // in case the phone's data listener wasn't attached yet
-      let resendCount = 0;
-      const resendTimer = setInterval(() => {
-        if (!conn.open) { clearInterval(resendTimer); return; }
-        if (claimedSide && App.connections[claimedSide] === conn) {
-          conn.send({ type: 'joined', side: claimedSide });
-        }
-        if (++resendCount >= 5) clearInterval(resendTimer);
-      }, 1000);
-    });
-
-    conn.on('close', () => {
-      for (const s of ['red', 'blue']) {
-        if (App.connections[s] === conn) {
-          delete App.connections[s];
-          onPlayerLeft(s);
-        }
-      }
-    });
-
-    conn.on('error', () => {
-      for (const s of ['red', 'blue']) {
-        if (App.connections[s] === conn) {
-          delete App.connections[s];
-          onPlayerLeft(s);
-        }
-      }
+  App.socket.on('connect', () => {
+    console.log('Socket connected to server');
+    // Create a room and get a code
+    App.socket.emit('create-room', (code) => {
+      App.roomCode = code;
+      showPhoneLobby(code);
     });
   });
 
-  App.peer.on('error', (err) => {
-    console.error('Peer error:', err);
-    // If the ID is taken, try a new code
-    if (err.type === 'unavailable-id') {
-      App.peer.destroy();
-      App.peer = null;
-      initPeer();
-    } else if (err.type === 'network' || err.type === 'server-error' || err.type === 'disconnected') {
-      // Show visible error on the phone lobby screen
-      const rc = document.getElementById('room-code');
-      if (rc) rc.innerHTML = '<span style="color:var(--neon-red)">Server error — retrying…</span>';
-      // Try to reconnect after 2s
-      App.peer.destroy();
-      App.peer = null;
-      setTimeout(() => initPeer(), 2000);
+  // Phone joined
+  App.socket.on('player-joined', ({ side }) => {
+    App.connections[side] = true;
+    onPlayerJoined(side);
+  });
+
+  // Phone left
+  App.socket.on('player-left', ({ side }) => {
+    delete App.connections[side];
+    onPlayerLeft(side);
+  });
+
+  // Phone action (button press)
+  App.socket.on('player-action', ({ action, side }) => {
+    if (App.activeGame && App.activeGame.onPhoneAction) {
+      App.activeGame.onPhoneAction(action, side);
     }
   });
 
-  // Heartbeat: every 5s, check if any connection hasn't been seen in 10s
-  // If so, mark it dead so a reconnecting phone can take the slot
-  setInterval(() => {
-    const now = Date.now();
-    for (const side of ['red', 'blue']) {
-      const conn = App.connections[side];
-      if (conn && conn.lastSeen && (now - conn.lastSeen) > 10000) {
-        // Connection is stale — mark it dead and clean up
-        conn.dead = true;
-        delete App.connections[side];
-        onPlayerLeft(side);
-      }
+  // Phone asks for controls (polling fallback)
+  App.socket.on('get-controls', () => {
+    if (App.currentControls) {
+      broadcastToPhones({ type: 'controls', scheme: App.currentControls.scheme, title: App.currentControls.title });
     }
-  }, 5000);
+  });
 }
 
 function generateRoomCode() {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // no confusing chars (0/O, 1/I)
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let code = '';
   for (let i = 0; i < 5; i++) code += chars[Math.floor(Math.random() * chars.length)];
   return code;
@@ -399,13 +293,15 @@ function onPlayerLeft(side) {
 }
 
 function sendToPhone(side, payload) {
-  const conn = App.connections[side];
-  if (conn && conn.open) conn.send(payload);
+  if (App.socket && App.socket.connected) {
+    App.socket.emit('host-broadcast', { ...payload, _target: side });
+  }
 }
 
 function broadcastToPhones(payload) {
-  sendToPhone('red', payload);
-  sendToPhone('blue', payload);
+  if (App.socket && App.socket.connected) {
+    App.socket.emit('host-broadcast', payload);
+  }
 }
 
 function checkStartReady() {
@@ -429,20 +325,20 @@ document.querySelectorAll('[data-mode]').forEach(btn => {
       resetScores();
       showScreen('lobby');
     } else {
-      // Phone mode — start PeerJS host with a short room code
-      initPeer();
+      // Phone mode — connect to Socket.IO server and get a room code
+      initSocket();
     }
   });
 });
 
-function showPhoneLobby(fullPeerId, code) {
+function showPhoneLobby(code) {
   document.getElementById('room-code').textContent = code;
   document.getElementById('players-joined').innerHTML = `
     <div id="player-red" class="player-dot red"></div>
     <div id="player-blue" class="player-dot blue"></div>
   `;
-  // QR code links to controller.html with the full peer ID as room param
-  const controllerUrl = `${window.location.origin}/controller.html?room=${encodeURIComponent(fullPeerId)}`;
+  // QR code links to controller.html with the room code
+  const controllerUrl = `${window.location.origin}/controller.html?room=${encodeURIComponent(code)}`;
   const qrEl = document.getElementById('qr-container');
   qrEl.innerHTML = '';
   new QRCode(qrEl, {
